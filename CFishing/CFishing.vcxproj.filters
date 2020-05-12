@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="lib\iArray.cpp" />
+    <ClCompile Include="lib\iColor.cpp" />
+    <ClCompile Include="lib\iFPS.cpp" />
+    <ClCompile Include="lib\iGraphics.cpp" />
+    <ClCompile Include="lib\iImage.cpp" />
+    <ClCompile Include="lib\iOpenAL.cpp" />
+    <ClCompile Include="lib\iOpenGL.cpp" />
+    <ClCompile Include="lib\iPoint.cpp" />
+    <ClCompile Include="lib\iPopup.cpp" />
+    <ClCompile Include="lib\iRect.cpp" />
+    <ClCompile Include="lib\iShortestPath.cpp" />
+    <ClCompile Include="lib\iSize.cpp" />
+    <ClCompile Include="lib\iSort.cpp" />
+    <ClCompile Include="lib\iStd.cpp" />
+    <ClCompile Include="lib\iString.cpp" />
+    <ClCompile Include="lib\iStrTex.cpp" />
+    <ClCompile Include="lib\iType.cpp" />
+    <ClCompile Include="game\App.cpp" />
+    <ClCompile Include="game\Menu.cpp" />
+    <ClCompile Include="game\glew.c" />
+    <ClCompile Include="game\Game.cpp" />
+    <ClCompile Include="game\Ending.cpp" />
+    <ClCompile Include="game\Intro.cpp" />
+    <ClCompile Include="game\Loading.cpp" />
+    <ClCompile Include="game\SelectMap.cpp" />
+    <ClCompile Include="game\SeaBoat.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lib\iArray.h" />
+    <ClInclude Include="lib\iColor.h" />
+    <ClInclude Include="lib\iFPS.h" />
+    <ClInclude Include="lib\iGraphics.h" />
+    <ClInclude Include="lib\iImage.h" />
+    <ClInclude Include="lib\iOpenAL.h" />
+    <ClInclude Include="lib\iOpenGL.h" />
+    <ClInclude Include="lib\iPoint.h" />
+    <ClInclude Include="lib\iPopup.h" />
+    <ClInclude Include="lib\iRect.h" />
+    <ClInclude Include="lib\iShortestPath.h" />
+    <ClInclude Include="lib\iSize.h" />
+    <ClInclude Include="lib\iSort.h" />
+    <ClInclude Include="lib\iStd.h" />
+    <ClInclude Include="lib\iString.h" />
+    <ClInclude Include="lib\iStrTex.h" />
+    <ClInclude Include="lib\iType.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="game\App.h" />
+    <ClInclude Include="game\Menu.h" />
+    <ClInclude Include="game\Game.h" />
+    <ClInclude Include="game\Ending.h" />
+    <ClInclude Include="game\Intro.h" />
+    <ClInclude Include="game\Loading.h" />
+    <ClInclude Include="game\SelectMap.h" />
+    <ClInclude Include="game\SeaBoat.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="CFishing.ico" />
+    <Image Include="small.ico" />
+    <Image Include="assets\atlas0.png" />
+    <Image Include="assets\btn.png" />
+    <Image Include="assets\Bulletbro_Bosscard_001.png" />
+    <Image Include="assets\cursor.png" />
+    <Image Include="assets\ex.png" />
+    <Image Include="assets\pig.png" />
+    <Image Include="assets\Player.bmp" />
+    <Image Include="assets\start.png" />
+    <Image Include="assets\must\cursor.png" />
+    <Image Include="assets\must\galleryBtn00.png" />
+    <Image Include="assets\must\galleryBtn01.png" />
+    <Image Include="assets\must\galleryBtn10.png" />
+    <Image Include="assets\must\galleryBtn11.png" />
+    <Image Include="assets\must\matchBg0.png" />
+    <Image Include="assets\menu\btnX0.png" />
+    <Image Include="assets\menu\btnX1.png" />
+    <Image Include="assets\menu\button.png" />
+    <Image Include="assets\menu\howtoplay.png" />
+    <Image Include="assets\menu\logo.png" />
+    <Image Include="assets\menu\menuBg.jpg" />
+    <Image Include="assets\menu\menuBtn00.png" />
+    <Image Include="assets\menu\menuBtn01.png" />
+    <Image Include="assets\menu\menuBtn10.png" />
+    <Image Include="assets\menu\menuBtn11.png" />
+    <Image Include="assets\menu\menuBtn20.png" />
+    <Image Include="assets\menu\menuBtn21.png" />
+    <Image Include="assets\menu\menuTitle.png" />
+    <Image Include="assets\menu\menuX.png" />
+    <Image Include="assets\menu\optionBtn00.png" />
+    <Image Include="assets\menu\optionBtn0.png" />
+    <Image Include="assets\menu\optionBtn01.png" />
+    <Image Include="assets\menu\optionBtn1.png" />
+    <Image Include="assets\menu\optionBtn10.png" />
+    <Image Include="assets\menu\optionBtn11.png" />
+    <Image Include="assets\menu\pressAnyKey.png" />
+    <Image Include="assets\menu\slotBtn0.png" />
+    <Image Include="assets\menu\slotBtn1.png" />
+    <Image Include="assets\menu\tableBg.jpg" />
+    <Image Include="assets\map\fishPoint.png" />
+    <Image Include="assets\map\koreaMap.jpg" />
+    <Image Include="assets\menu\gb.jpg" />
+    <Image Include="assets\map\fishPoint0.png" />
+    <Image Include="assets\map\fishPoint1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CFishing.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="assets\BMJUA_otf.otf" />
+    <Font Include="assets\BMJUA_ttf.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="assets\snd\0.wav" />
+    <Media Include="assets\snd\1.wav" />
+    <Media Include="assets\snd\2.wav" />
+    <Media Include="assets\snd\3.wav" />
+    <Media Include="assets\must\0.wav" />
+    <Media Include="assets\must\1.wav" />
+    <Media Include="assets\must\2.wav" />
+    <Media Include="assets\must\3.wav" />
+  </ItemGroup>
+</Project>
