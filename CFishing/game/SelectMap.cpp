@@ -11,6 +11,8 @@ void loadSelectMap()
 
 
 	createPopPoint();
+	createPopFishingInfo();
+
 	showPopPoint(true);
 }
 
@@ -20,6 +22,7 @@ void freeSelectMap()
 
 
 	freePopPoint();
+	freePopFishingInfo();
 
 }
 
@@ -33,6 +36,7 @@ void drawSelectMap(float dt)
 
 
 	drawPopPoint(dt);
+	drawPopFishingInfo(dt);
 
 }
 
@@ -41,12 +45,17 @@ void keySelectMap(iKeyState stat, iPoint point)
 {
 	if (keyPopPoint(stat, point))
 		return;
+	if (keyPopFishingInfo(stat, point))
+		return;
 
 }
 
 
 iPopup* fishpoint;
 iImage** fp;
+int bShowFishInfo;
+void drawPopPointBefore(iPopup* me, float dt);
+
 void createPopPoint()
 {
 	iPopup* pop = new iPopup(iPopupStyleZoom);
@@ -63,7 +72,7 @@ void createPopPoint()
 			freeImage(tex);
 		}
 
-		fishingImg->position = iPointMake(120, 50 * i);
+		fishingImg->position = iPointMake(130, 50 * i);
 		pop->addObject(fishingImg);
 		fp[i] = fishingImg;
 
@@ -73,8 +82,11 @@ void createPopPoint()
 
 	pop->openPosition = iPointMake(devSize.width / 2, devSize.height / 2);
 	pop->closePosition = iPointMake(devSize.width / 2, devSize.height / 2);
+	pop->methodDrawBefore = drawPopPointBefore;
 
 	fishpoint = pop;
+
+	bShowFishInfo = -1;
 }
 
 void freePopPoint()
@@ -88,12 +100,25 @@ void showPopPoint(bool show)
 	fishpoint->show(show);
 }
 
-void drawPopPoint(float dt)
+void drawPopPointBefore(iPopup* me, float dt)
 {
 	for (int i = 0; i < 3; i++)
 		fp[i]->setTexAtIndex(i == fishpoint->selected);
+
+	if (bShowFishInfo != -1)
+	{
+		stScreen->setString("%d", bShowFishInfo);
+		showPopFishingInfo(true);
+	}
+	else
+	{
+		showPopFishingInfo(false);
+	}
+}
+
+void drawPopPoint(float dt)
+{
 	fishpoint->paint(dt);
-	
 }
 
 bool keyPopPoint(iKeyState stat, iPoint point)
@@ -110,7 +135,7 @@ bool keyPopPoint(iKeyState stat, iPoint point)
 	{
 	case iKeyStateBegan:
 		i = fishpoint->selected;
-
+		fishpoint->selected = -1;
 		if (i == -1) break;
 		if (i < 3)
 		{
@@ -129,6 +154,7 @@ bool keyPopPoint(iKeyState stat, iPoint point)
 			}
 		}
 		fishpoint->selected = j;
+		bShowFishInfo = j;
 		break;
 	case iKeyStateEnded:
 
@@ -137,3 +163,88 @@ bool keyPopPoint(iKeyState stat, iPoint point)
 	}
 	return false;
 }
+
+/////////////////////////////////////////////////////////////////
+//PopFishingInfo
+/////////////////////////////////////////////////////////////////
+
+iPopup* finfo;
+
+iImage* screen;
+iStrTex* stScreen;
+Texture* methodStScreen(const char* str);
+
+void createPopFishingInfo()
+{
+	iPopup* pop = new iPopup(iPopupStyleAlpha);
+	finfo = pop;
+
+	stScreen = new iStrTex(methodStScreen);
+	stScreen->setString("0");
+	screen = new iImage();
+	screen->addObject(stScreen->tex);
+	pop->addObject(screen);
+
+	pop->openPosition = iPointMake(devSize.width/2+200 , devSize.height/2-200);
+
+	pop->closePosition = iPointMake(devSize.width/2+200, devSize.height/2-200);
+}
+	
+Texture* methodStScreen(const char* str)
+{
+	iGraphics* g = iGraphics::instance();
+	iSize size = iSizeMake(250, 250);
+	g->init(size);
+
+	setRGBA(0, 0, 1, 0.8f);
+	g->fillRect(0, 0, size.width, size.height, 20);
+
+	int i = atoi(str);
+
+	const char* strPoint[3] = {
+		"낚시터 1", "낚시터 2", "낚시터 3"
+	};
+	const char* strfish[3][3] = {
+		{"농어","참치","청새치"},{"농어","은어","상어"},{"농어","볼락","다금바리"}
+	};
+	setStringSize(30);
+	setStringRGBA(1, 1, 1, 1);
+	setStringBorder(0);
+	g->drawString(size.width / 2, 10, TOP | HCENTER, strPoint[i]);
+	for (int j = 0; j < 3; j++)
+	{
+
+		setStringSize(20);
+		setStringRGBA(0, 1, 1, 1);
+		setStringBorder(0);
+		g->drawString(size.width / 2, size.height / 2 + 50 * j + 1,
+			VCENTER | HCENTER, strfish[i][j]);
+	}
+	return g->getTexture();
+}
+
+void freePopFishingInfo()
+{
+	delete finfo;
+	delete stScreen;
+}
+
+void showPopFishingInfo(bool show)
+{
+	finfo->show(show);
+}
+
+void drawPopFishingInfo(float dt)
+{
+	finfo->paint(dt);
+}
+
+
+bool keyPopFishingInfo(iKeyState stat, iPoint point)
+{
+	
+	return false;
+}
+
+
+

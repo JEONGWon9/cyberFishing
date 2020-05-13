@@ -13,10 +13,10 @@ void loadGame()
 #if 0
 	loadIntro();
 	gameState = gs_intro;
-#elif 0
+#elif 1
 	loadMenu();
 	gameState = gs_menu;
-#else
+#elif 0
 	loadSeaBoat();
 	gameState = gs_seaboat;
 #endif

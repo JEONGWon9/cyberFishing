@@ -46,7 +46,6 @@ void loadSeaBoat()
 
 	createPopFishing();
 
-	showPopFishing(true);
 
 }
 
@@ -161,6 +160,16 @@ void Boat::move(iPoint mp)
 					min = SeaTileWidth * (x + 1);
 					break;
 				}
+				else if (maptile[SeaTileX * y + x].attr == 3)
+				{
+					col = true;
+					min = SeaTileWidth * (x + 1);
+
+					showPopFishing(true);
+					break;
+				}
+				else
+					showPopFishing(false);	break;
 			}
 			if (col)
 				break;
@@ -188,6 +197,16 @@ void Boat::move(iPoint mp)
 					min = SeaTileWidth * x - 1;
 					break;
 				}
+				else if (maptile[SeaTileX * y + x].attr == 3)
+				{
+					col = true;
+					min = SeaTileWidth * x - 1;
+
+					showPopFishing(true);
+					break;
+				}
+				else
+					showPopFishing(false);	break;
 			}
 			if (col)
 				break;
@@ -217,6 +236,16 @@ void Boat::move(iPoint mp)
 					min = SeaTileHeight * (y + 1);
 					break;
 				}
+				else if (maptile[SeaTileX * y + x].attr == 3)
+				{
+					col = true;
+					min = SeaTileHeight * (y + 1);
+
+					showPopFishing(true);
+					break;
+				}
+				else
+					showPopFishing(false);	break;
 			}
 			if (col)
 				break;
@@ -244,6 +273,16 @@ void Boat::move(iPoint mp)
 					min = SeaTileHeight * y - 1;
 					break;
 				}
+				else if (maptile[SeaTileX * y + x].attr == 3)
+				{
+					col = true;
+					min = SeaTileHeight * y - 1;
+
+					showPopFishing(true);
+					break;
+				}
+				else
+					showPopFishing(false);	break;
 			}
 			if (col)
 				break;
@@ -345,3 +384,4 @@ bool keyPopFishing(iKeyState stat, iPoint point)
 	}
 	return false;
 }
+
