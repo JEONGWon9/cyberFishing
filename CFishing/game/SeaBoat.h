@@ -32,9 +32,27 @@ struct Boat
 	iSize size;
 	float speed;
 
+	bool keep;
+	iPoint positionKeep;
+	float keepDt;
+	int direction;
+
+
+
 	void move(iPoint movement);
 
 };
+
+struct gage
+{
+	bool gage;
+	iPoint gagePoint;
+	
+	float gageDt;
+
+
+};
+
 #define MapCharWidth 30
 #define MapCharHeight 30
 
@@ -44,12 +62,40 @@ float getDistanceLine0(iPoint p, iPoint sp, iPoint ep);
 float getDistanceLine1(iPoint p, iPoint sp, iPoint ep);
 
 /////////////////////////////////////////////////////////////////
-//PopFishing
+//PopBackBtn
 /////////////////////////////////////////////////////////////////
 
-void createPopFishing();
-void freePopFishing();
-void showPopFishing(bool show);
-void drawPopFishing(float dt);
-bool keyPopFishing(iKeyState stat, iPoint point);
+void createPopBackBtn();
+void freePopBackBtn();
+void showPopBackBtn(bool show);
+void drawPopBackBtn(float dt);
+bool keyPopBackBtn(iKeyState stat, iPoint point);
 
+
+
+
+/////////////////////////////////////////////////////////////////
+//PopFishingGage
+/////////////////////////////////////////////////////////////////
+
+void createPopFishingGage();
+void freePopFishingGage();
+void showPopFishingGage(bool show);
+void drawPopFishingGage(float dt);
+bool keyPopFishingGage(iKeyState stat, iPoint point);
+
+/////////////////////////////////////////////////////////////////
+//PopFishingfloat
+/////////////////////////////////////////////////////////////////
+
+void createPopFishingfloat();
+void freePopFishingfloat();
+void showPopFishingfloat(bool show);
+void drawPopFishingfloat(float dt);
+bool keyPopFishingfloat(iKeyState stat, iPoint point);
+/*
+
+ 낚시줄던지기 // 게이지바 
+
+ drawLine(sp(,ep
+*/

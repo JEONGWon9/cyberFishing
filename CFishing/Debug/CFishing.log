@@ -1,4 +1,21 @@
-﻿  Game.cpp
+﻿  SeaBoat.cpp
 C:\workspace\CFishing\CFishing\lib\iFPS.h(15,17): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\lib\iFPS.h(17,25): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(164,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(165,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(166,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(202,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(203,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(204,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(243,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(244,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(245,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(281,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(282,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(283,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(435,35): warning C4244: '인수': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(434,67): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(434,56): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(434,40): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(434,30): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   CFishing.vcxproj -> C:\workspace\CFishing\Debug\CFishing.exe

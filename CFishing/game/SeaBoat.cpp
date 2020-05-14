@@ -44,8 +44,9 @@ void loadSeaBoat()
 	bt->size = iSizeMake(MapCharWidth, MapCharHeight);
 	bt->speed = 300;
 
-	createPopFishing();
-
+	createPopBackBtn();
+	createPopFishingGage();
+	
 
 }
 
@@ -54,7 +55,8 @@ void freeSeaBoat()
 	free(maptile);
 	free(bt);
 
-	freePopFishing();
+	freePopBackBtn();
+	freePopFishingGage();
 }
 
 void drawSeaBoat(float dt)
@@ -82,7 +84,19 @@ void drawSeaBoat(float dt)
 		bt->position.y + offMt.y - bt->size.height / 2,
 		bt->size.width, bt->size.height);
 
+
+	/////////////////////////////////////////////////////////////////////////////
+
 	iPoint movement = iPointMake(0, 0) * dt;
+
+	if (getKeyDown() & keyboard_space)
+	{
+		showPopFishingGage(true);
+	}
+	else if (getKeyDown() & keyboard_enter)
+	{
+		showPopFishingGage(false);
+	}
 
 	uint32 keyStat = getKeyStat();
 	iPoint v = iPointZero;
@@ -128,13 +142,15 @@ void drawSeaBoat(float dt)
 	}
 
 
-	drawPopFishing(dt);
+	drawPopBackBtn(dt);
+	drawPopFishingGage(dt);
 }
 
 void keySeaBoat(iKeyState stat, iPoint point)
 {
 
-	keyPopFishing(stat, point); 
+	keyPopBackBtn(stat, point);
+	keyPopFishingGage(stat, point);
 }
 
 
@@ -160,16 +176,17 @@ void Boat::move(iPoint mp)
 					min = SeaTileWidth * (x + 1);
 					break;
 				}
-				else if (maptile[SeaTileX * y + x].attr == 3)
+			if (maptile[SeaTileX * y + x].attr == 3)
 				{
 					col = true;
-					min = SeaTileWidth * (x + 1);
+					min = SeaTileWidth * (x + 3);
 
-					showPopFishing(true);
+					showPopBackBtn(true);
 					break;
 				}
-				else
-					showPopFishing(false);	break;
+			else
+				showPopBackBtn(false);	break;
+			
 			}
 			if (col)
 				break;
@@ -197,16 +214,18 @@ void Boat::move(iPoint mp)
 					min = SeaTileWidth * x - 1;
 					break;
 				}
-				else if (maptile[SeaTileX * y + x].attr == 3)
+				if (maptile[SeaTileX * y + x].attr == 3)
 				{
 					col = true;
-					min = SeaTileWidth * x - 1;
+					min = SeaTileWidth * x - 3;
 
-					showPopFishing(true);
+					showPopBackBtn(true);
 					break;
 				}
-				else
-					showPopFishing(false);	break;
+				else			
+					showPopBackBtn(false);	break;
+				
+
 			}
 			if (col)
 				break;
@@ -236,16 +255,17 @@ void Boat::move(iPoint mp)
 					min = SeaTileHeight * (y + 1);
 					break;
 				}
-				else if (maptile[SeaTileX * y + x].attr == 3)
+				 if (maptile[SeaTileX * y + x].attr == 3)
 				{
 					col = true;
-					min = SeaTileHeight * (y + 1);
+					min = SeaTileHeight * (y + 3);
 
-					showPopFishing(true);
+					showPopBackBtn(true);
 					break;
 				}
-				else
-					showPopFishing(false);	break;
+				 else
+					 showPopBackBtn(false);	break;
+				 
 			}
 			if (col)
 				break;
@@ -273,16 +293,17 @@ void Boat::move(iPoint mp)
 					min = SeaTileHeight * y - 1;
 					break;
 				}
-				else if (maptile[SeaTileX * y + x].attr == 3)
+				if (maptile[SeaTileX * y + x].attr == 3)
 				{
 					col = true;
-					min = SeaTileHeight * y - 1;
+					min = SeaTileHeight * y - 3;
 
-					showPopFishing(true);
+					showPopBackBtn(true);
 					break;
 				}
 				else
-					showPopFishing(false);	break;
+					showPopBackBtn(false);	break;
+				
 			}
 			if (col)
 				break;
@@ -297,15 +318,15 @@ void Boat::move(iPoint mp)
 }
 
 /////////////////////////////////////////////////////////////////
-//PopFishing
+//PopBackBtn
 /////////////////////////////////////////////////////////////////
 
-iPopup* fishing;
+iPopup* bB;
 iImage* backBtn;
-void createPopFishing()
+void createPopBackBtn()
 {
 	iPopup* pop = new iPopup(iPopupStyleAlpha);
-	fishing = pop;
+	bB = pop;
 
 	
 
@@ -335,33 +356,33 @@ void createPopFishing()
 
 }
 
-void freePopFishing()
+void freePopBackBtn()
 {
-	delete fishing;
+	delete bB;
 }
 
-void showPopFishing(bool show)
+void showPopBackBtn(bool show)
 {
-	fishing->show(show);
+	bB->show(show);
 }
 
-void drawPopFishing(float dt)
+void drawPopBackBtn(float dt)
 {
-	fishing->paint(dt);
+	bB->paint(dt);
 
 }
 
-bool keyPopFishing(iKeyState stat, iPoint point)
+bool keyPopBackBtn(iKeyState stat, iPoint point)
 {
-	if(fishing->bShow == false)
+	if(bB->bShow == false)
 		return false;
-	if (fishing->stat != iPopupStatProc)
+	if (bB->stat != iPopupStatProc)
 		return true;
 	int i, j = -1;
 	switch (stat)
 	{
 	case iKeyStateBegan:
-		i = fishing->selected;
+		i = bB->selected;
 		if (i == 0)
 		{
 			METHOD_LOADING f[1] = { loadSelectMap };
@@ -370,12 +391,12 @@ bool keyPopFishing(iKeyState stat, iPoint point)
 		break;
 
 	case iKeyStateMoved:
-		if (containPoint(point, backBtn->touchRect(fishing->closePosition)))
+		if (containPoint(point, backBtn->touchRect(bB->closePosition)))
 		{
 			j = 0;
 		}
 		
-		fishing->selected = j;
+		bB->selected = j;
 		break;
 		
 	case iKeyStateEnded:
@@ -385,3 +406,68 @@ bool keyPopFishing(iKeyState stat, iPoint point)
 	return false;
 }
 
+/////////////////////////////////////////////////////////////////
+//PopFishingGage
+/////////////////////////////////////////////////////////////////
+iPopup* gagebar;
+iImage* gagebarRect;
+gage* gg;
+void createPopFishingGage()
+{
+	float dt = 0.1f;
+
+	iPopup* pop = new iPopup(iPopupStyleAlpha);
+	gagebar = pop;
+
+	gagebarRect = new iImage();
+	iGraphics* g = iGraphics::instance();
+	{
+		iSize size = iSizeMake(25,100);
+		g->init(size);
+
+		setRGBA(1, 0, 0, 1);
+		g->fillRect(0,0,size.width,size.height,0);
+			   
+		Texture* tex = g->getTexture();
+
+		drawImage(tex,devSize.width/2,devSize.height,0,0,size.width,size.height,HCENTER|VCENTER
+			,0,(devSize.height/tex->height)*sin(180/3.141592*dt),0,REVERSE_NONE);
+		gagebarRect->addObject(tex);
+		freeImage(tex);
+
+	}
+
+	pop->addObject(gagebarRect);
+
+	pop->openPosition = iPointMake(bt->position.x, bt->position.y);
+	pop->closePosition = iPointMake(bt->position.x, bt->position.y);
+	
+	   
+}
+
+
+
+void freePopFishingGage()
+{
+	delete gagebar;
+}
+
+void showPopFishingGage(bool show)
+{
+	gagebar->show(show);
+}
+
+void drawPopFishingGage(float dt)
+{
+	gagebar->paint(dt);
+}
+
+bool keyPopFishingGage(iKeyState stat, iPoint point)
+{
+	if (gagebar->bShow == false)
+		return false;
+	if (gagebar->stat != iPopupStatProc)
+		return true;
+
+	return false;
+}
