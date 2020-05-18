@@ -16,8 +16,8 @@ struct MapTile
 
 #define SeaTileX 10
 #define SeaTileY 13
-#define SeaTileWidth 60
-#define SeaTileHeight 60
+#define SeaTileWidth 50
+#define SeaTileHeight 50
 
 
 #define tile_color_canMove		0, 0.8f, 1, 1
@@ -40,18 +40,11 @@ struct Boat
 
 
 	void move(iPoint movement);
+	void Throw(iPoint tp,float dt);
 
 };
 
-struct gage
-{
-	bool gage;
-	iPoint gagePoint;
-	
-	float gageDt;
 
-
-};
 
 #define MapCharWidth 30
 #define MapCharHeight 30
@@ -84,6 +77,9 @@ void showPopFishingGage(bool show);
 void drawPopFishingGage(float dt);
 bool keyPopFishingGage(iKeyState stat, iPoint point);
 
+#define _gageDt 1.0f
+
+
 /////////////////////////////////////////////////////////////////
 //PopFishingfloat
 /////////////////////////////////////////////////////////////////
@@ -93,9 +89,19 @@ void freePopFishingfloat();
 void showPopFishingfloat(bool show);
 void drawPopFishingfloat(float dt);
 bool keyPopFishingfloat(iKeyState stat, iPoint point);
+
+
 /*
 
- 낚시줄던지기 // 게이지바 
 
- drawLine(sp(,ep
+
+높이값 비율로 보트 원점에서 선이 돌면서 바라보는 방향으로 날라감
+선이 멈추면 그자리에작은 네모(찌)
+
+->3초 뒤 네모(찌) 사라지고 게임시작
+
+
 */
+
+
+

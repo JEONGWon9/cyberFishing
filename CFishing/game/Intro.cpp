@@ -23,30 +23,7 @@ void freeM(void* data)
 Image** imgs;
 void loadIntro()
 {
-	printf("loadIntro()\n");
-
-	score = 0;
-	sScore = 0;
-	eScore = 0;
-	scoreDt = _scoreDt;
-
-	dmgDt = _dmgDt;
-
-	iSize size = iSizeMake(256, 40);
-	imgDmg = new Bitmap(size.width, size.height);
-	Graphics* g2 = Graphics::FromImage(imgDmg);
-
-	//Graphics* getG();
-	//void setG(Graphics * g);
-	extern Graphics* g;
-	Graphics* gBackup = g;// getG();
-	g = g2;//setG(g2);
-
-
-	Texture* tex = createImage("assets/ex.png");
-	drawImage(tex, 0, 0, TOP | LEFT);
-	delete tex;
-
+	
 	setStringSize(35);
 	setStringRGBA(1, 1, 1, 1);
 	setStringBorder(2);
@@ -54,23 +31,7 @@ void loadIntro()
 	drawString(size.width/2, size.height/2,
 		VCENTER | HCENTER, "Dmg 1234");
 
-	g = gBackup;//setG(gBackup);
-
-	tex = createImage("assets/Player.bmp");// 64x32
-	imgs = (Image**)malloc(sizeof(Image*) * 2);
-	for (int i = 0; i < 2; i++)
-	{
-		Image* ii = new Bitmap(32, 32);
-		Graphics* gg = Graphics::FromImage(ii);
-
-		Graphics* gBackup = g;// getG();
-		g = gg;//setG(g2);
-		drawImage(tex, -32 * i, 0, TOP | LEFT);
-		g = gBackup;//setG(gBackup);
-
-		delete gg;
-		imgs[i] = ii;
-	}
+	
 }
 
 void freeIntro()
@@ -80,10 +41,7 @@ void freeIntro()
 
 void drawIntro(float dt)
 {
-	setRGBA(1, 0, 0, 1);
-	fillRect(0, 0, devSize.width, devSize.height);
-
-	printf("============ start\n");
+	
 	static float delta = 0.0f;
 	delta += dt;
 	if (delta > 1.0f)
@@ -127,34 +85,29 @@ void drawIntro(float dt)
 
 	if (dmgDt < _dmgDt)
 	{
-		float scale, alpha, degree;
+		float scale
 		iPoint position;
 
 		// 0.2f : 3배 크기에서 1 크기로 줄어든다.(scale=3 => 1
 		if (dmgDt < 0.2f)
 		{
 			scale = 8.0f - 7.0f * dmgDt / 0.2f;
-			alpha = dmgDt / 0.2f;
 			position = iPointMake(devSize.width / 2, devSize.height / 2);
-			degree = 360 * dmgDt / 0.2f;
 		}
 		// 0.2f : 1배 크기(1.0, 1.0)
 		else if( dmgDt < 0.4f )
 		{
 			scale = 1.0f;
-			alpha = 1.0f;
+			
 			position = iPointMake(devSize.width / 2, devSize.height / 2);
-			degree = 0.0;
+		
 		}
 		// 0.8f : 위로 사라진다.(scale=1.0, alpha= 1.0 => 0.0)
 		else// if (dmgDt < _dmgDt)
 		{
 			scale = 1.0f;
-			float r = (dmgDt - 0.4f) / 0.8f;
-			alpha = 1.0f - r;
 			position = iPointMake(devSize.width / 2,
 								devSize.height / 2 - 100*r);
-			degree = 0.0;
 		}
 		setRGBA(1, 1, 1, alpha);
 		drawImage(tex, position.x, position.y,

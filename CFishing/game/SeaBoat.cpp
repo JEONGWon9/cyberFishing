@@ -9,15 +9,15 @@
 uint8 tile[SeaTileX * SeaTileY] = {
 	1,1,1,1,1,1,1,1,1,1,
 	0,0,0,3,0,0,0,0,0,0,
-	0,0,0,3,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,2,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,2,2,0,0,0,0,
 	0,0,0,0,2,2,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,0,0,0,0,0,
-	0,0,0,0,0,3,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,
 	0,0,0,0,0,3,0,0,0,0,
 	1,1,1,1,1,1,1,1,1,1,
 };
@@ -26,6 +26,7 @@ MapTile* maptile;
 Boat* bt;
 
 iPoint offMt;
+
 
 void loadSeaBoat()
 {
@@ -43,6 +44,7 @@ void loadSeaBoat()
 	bt->position = iPointMake(SeaTileWidth,SeaTileHeight);
 	bt->size = iSizeMake(MapCharWidth, MapCharHeight);
 	bt->speed = 300;
+//
 
 	createPopBackBtn();
 	createPopFishingGage();
@@ -85,18 +87,19 @@ void drawSeaBoat(float dt)
 		bt->size.width, bt->size.height);
 
 
+
 	/////////////////////////////////////////////////////////////////////////////
 
 	iPoint movement = iPointMake(0, 0) * dt;
 
+
+
 	if (getKeyDown() & keyboard_space)
 	{
 		showPopFishingGage(true);
+
 	}
-	else if (getKeyDown() & keyboard_enter)
-	{
-		showPopFishingGage(false);
-	}
+
 
 	uint32 keyStat = getKeyStat();
 	iPoint v = iPointZero;
@@ -107,7 +110,7 @@ void drawSeaBoat(float dt)
 	if (v != iPointZero)
 	{
 		v /= iPointLength(v);
-		iPoint mp = v * (bt->speed * dt);
+		 iPoint mp = v * (bt->speed * dt);
 		bt->move(mp + movement);
 
 		iPoint vp = offMt + bt->position;
@@ -176,7 +179,7 @@ void Boat::move(iPoint mp)
 					min = SeaTileWidth * (x + 1);
 					break;
 				}
-			if (maptile[SeaTileX * y + x].attr == 3)
+				if (maptile[SeaTileX * y + x].attr == 3)
 				{
 					col = true;
 					min = SeaTileWidth * (x + 3);
@@ -184,8 +187,8 @@ void Boat::move(iPoint mp)
 					showPopBackBtn(true);
 					break;
 				}
-			else
-				showPopBackBtn(false);	break;
+				else
+					showPopBackBtn(false);	break;
 			
 			}
 			if (col)
@@ -351,10 +354,12 @@ void createPopBackBtn()
 	}
 	pop->addObject(backBtn);
 
-	pop->openPosition = iPointMake(5, 5);
-	pop->closePosition = iPointMake(5, 5);
+	pop->openPosition = iPointMake(5,5);
+	pop->closePosition = iPointMake(5,5);
 
 }
+
+
 
 void freePopBackBtn()
 {
@@ -411,63 +416,107 @@ bool keyPopBackBtn(iKeyState stat, iPoint point)
 /////////////////////////////////////////////////////////////////
 iPopup* gagebar;
 iImage* gagebarRect;
-gage* gg;
+
+
+float gageDt;
+
+void drawPopFishingGageAfter(iPopup* me, float dt);
 void createPopFishingGage()
 {
-	float dt = 0.1f;
-
 	iPopup* pop = new iPopup(iPopupStyleAlpha);
 	gagebar = pop;
 
 	gagebarRect = new iImage();
 	iGraphics* g = iGraphics::instance();
 	{
-		iSize size = iSizeMake(25,100);
+		iSize size = iSizeMake(25, 100);
 		g->init(size);
 
-		setRGBA(1, 0, 0, 1);
-		g->fillRect(0,0,size.width,size.height,0);
-			   
+		setRGBA(0, 0, 0, 1);
+		g->drawRect(0, 0, size.width, size.height, 0);
+	
 		Texture* tex = g->getTexture();
-
-		drawImage(tex,devSize.width/2,devSize.height,0,0,size.width,size.height,HCENTER|VCENTER
-			,0,(devSize.height/tex->height)*sin(180/3.141592*dt),0,REVERSE_NONE);
 		gagebarRect->addObject(tex);
 		freeImage(tex);
-
 	}
-
 	pop->addObject(gagebarRect);
 
-	pop->openPosition = iPointMake(bt->position.x, bt->position.y);
-	pop->closePosition = iPointMake(bt->position.x, bt->position.y);
+	pop->methodDrawAfter = drawPopFishingGageAfter;
 	
-	   
 }
-
 
 
 void freePopFishingGage()
 {
 	delete gagebar;
+	delete gagebarRect;
 }
 
 void showPopFishingGage(bool show)
 {
 	gagebar->show(show);
+	if (show)
+		gageDt = 0.0f;
+}
+
+void drawPopFishingGageAfter(iPopup* me, float dt)
+{
+	if (me->stat != iPopupStatProc)
+		return;
+
+	gageDt += dt;
+	if (gageDt > _gageDt)
+		gageDt -= _gageDt;
+	iPoint p = gagebarRect->position + me->closePosition;
+
+	setRGBA(0, 1, 0, 1);
+	// 23 x 98
+	iRect rt;
+	rt.size.width = 23;
+	rt.size.height = 15 + 83 * _sin(180 * gageDt / _gageDt);
+	rt.origin.x = 1;
+	rt.origin.y = 100 - rt.size.height;
+	fillRect(rt);
+
+
+
+
+	
+
+
 }
 
 void drawPopFishingGage(float dt)
 {
 	gagebar->paint(dt);
+	iPoint gp = bt->position + offMt;
+
+	gagebar->openPosition = iPointMake(gp.x+30 , gp.y-50);
+	gagebar->closePosition = iPointMake(gp.x+30 , gp.y-50 );
+
+
 }
 
 bool keyPopFishingGage(iKeyState stat, iPoint point)
 {
+
 	if (gagebar->bShow == false)
 		return false;
 	if (gagebar->stat != iPopupStatProc)
 		return true;
+	if (stat == iKeyStateBegan)
+	{
+		float r = fabsf(gageDt - _gageDt / 2);
+		printf("ability = %0.f %\n", r * 100);
+		showPopFishingGage(false);
+
+		setRGBA(1, 0, 0, 1);
+		drawLine(bt->position+offMt,bt->position+offMt*_sin(180*r));
+	}
+
+
+	
 
 	return false;
 }
+
