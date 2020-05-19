@@ -31,16 +31,16 @@ struct Boat
 	iPoint position;
 	iSize size;
 	float speed;
+	Texture* tex;
 
 	bool keep;
 	iPoint positionKeep;
-	float keepDt;
 	int direction;
 
-
+	void Vec(iPoint v,float dt);
 
 	void move(iPoint movement);
-	void Throw(iPoint tp,float dt);
+
 
 };
 
@@ -78,24 +78,24 @@ void drawPopFishingGage(float dt);
 bool keyPopFishingGage(iKeyState stat, iPoint point);
 
 #define _gageDt 1.0f
-
+#define _throwDt 1.0f
 
 /////////////////////////////////////////////////////////////////
 //PopFishingfloat
 /////////////////////////////////////////////////////////////////
 
-void createPopFishingfloat();
-void freePopFishingfloat();
-void showPopFishingfloat(bool show);
-void drawPopFishingfloat(float dt);
-bool keyPopFishingfloat(iKeyState stat, iPoint point);
+void createFishingfloat();
+void freeFishingfloat();
+void showFishingfloat(bool show);
+void drawFishingfloat(float dt);
+bool keyFishingfloat(iKeyState stat, iPoint point);
 
 
 /*
 
 
 
-높이값 비율로 보트 원점에서 선이 돌면서 바라보는 방향으로 날라감
+높이값 비율로 보트 원점에서 선이 돌면서 바라보는 방향으로 날라감(방향조절)
 선이 멈추면 그자리에작은 네모(찌)
 
 ->3초 뒤 네모(찌) 사라지고 게임시작

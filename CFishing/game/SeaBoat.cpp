@@ -27,7 +27,6 @@ Boat* bt;
 
 iPoint offMt;
 
-
 void loadSeaBoat()
 {
 	int i, num = SeaTileX * SeaTileY;
@@ -44,8 +43,7 @@ void loadSeaBoat()
 	bt->position = iPointMake(SeaTileWidth,SeaTileHeight);
 	bt->size = iSizeMake(MapCharWidth, MapCharHeight);
 	bt->speed = 300;
-//
-
+	
 	createPopBackBtn();
 	createPopFishingGage();
 	
@@ -81,27 +79,25 @@ void drawSeaBoat(float dt)
 		drawRect(x + 2, y + 2, SeaTileWidth - 4, SeaTileHeight - 4);
 	}
 
-	setRGBA(1,0,0,1);
+	//boat//
+	setRGBA(1, 0, 0, 1);
 	fillRect(bt->position.x + offMt.x - bt->size.width / 2,
 		bt->position.y + offMt.y - bt->size.height / 2,
 		bt->size.width, bt->size.height);
 
-
-
 	/////////////////////////////////////////////////////////////////////////////
 
-	iPoint movement = iPointMake(0, 0) * dt;
-
-
+	//iPoint movement = iPointMake(0, 0) * dt;
 
 	if (getKeyDown() & keyboard_space)
 	{
 		showPopFishingGage(true);
 
 	}
-
-
+#if 1
 	uint32 keyStat = getKeyStat();
+
+	iPoint movement = iPointMake(0, 0) * dt;
 	iPoint v = iPointZero;
 	if (keyStat & keyboard_left) v.x = -1;
 	else if (keyStat & keyboard_right) v.x = 1;
@@ -115,6 +111,86 @@ void drawSeaBoat(float dt)
 
 		iPoint vp = offMt + bt->position;
 		if (vp.x < devSize.width * 0.333333f)
+		{
+			// 왼쪽으로 넘어갔을 경우
+			offMt.x += (devSize.width * 0.333333f - vp.x);
+			if (offMt.x > 0)
+				offMt.x = 0;
+		}
+		else if (vp.x > devSize.width * 0.666667f)
+		{
+			// 오른쪽으로 넘어갔을 경우
+			offMt.x += (devSize.width * 0.666667f - vp.x);
+			if (offMt.x < devSize.width - SeaTileWidth * SeaTileX)
+			offMt.x = devSize.width - SeaTileWidth * SeaTileX;
+		}
+		if (vp.y < devSize.height * 0.333333f)
+		{
+			// 위로 넘어갔을 경우
+			offMt.y += (devSize.height * 0.333333f - vp.y);
+			if (offMt.y > 0)
+				offMt.y = 0;
+		}
+		else if (vp.y > devSize.height * 0.666667f)
+		{
+			// 아래로 넘어갔을 경우
+			offMt.y += (devSize.height * 0.666667f - vp.y);
+			if (offMt.y < devSize.height - SeaTileHeight * SeaTileY)
+				offMt.y = devSize.height - SeaTileHeight * SeaTileY;
+		}
+	}
+#else
+
+#endif
+
+	drawPopBackBtn(dt);
+	drawPopFishingGage(dt);
+}
+
+
+void keySeaBoat(iKeyState stat, iPoint point)
+{
+
+	keyPopBackBtn(stat, point);
+	keyPopFishingGage(stat, point);
+}
+
+#if 0
+void Boat::Vec(iPoint v, float dt)
+{
+	iPoint movement = iPointMake(0, 0) * dt;
+
+	v = iPointZero;
+
+	uint32 keyStat = getKeyStat();
+	if (keyStat & keyboard_left)
+	{
+		v.x = -1;
+	}
+	else if (keyStat & keyboard_right)
+	{
+		v.x = 1;
+	}
+	if (keyStat & keyboard_up)
+	{
+		v.y = -1;
+	}
+
+	else if (keyStat & keyboard_down)
+	{
+		v.y = 1;
+	}
+	///////
+	//camera
+	///////
+	if (v != iPointZero)
+	{
+		v /= iPointLength(v);
+		iPoint mp = v * (bt->speed * dt);
+		bt->move(mp + movement);
+
+		iPoint vp = offMt + bt->position;
+		if (vp.x < devSize.width * 0.3333f)
 		{
 			// 왼쪽으로 넘어갔을 경우
 			offMt.x += (devSize.width * 0.333333f - vp.x);
@@ -142,21 +218,11 @@ void drawSeaBoat(float dt)
 			if (offMt.y < devSize.height - SeaTileHeight * SeaTileY)
 				offMt.y = devSize.height - SeaTileHeight * SeaTileY;
 		}
+
 	}
-
-
-	drawPopBackBtn(dt);
-	drawPopFishingGage(dt);
 }
-
-void keySeaBoat(iKeyState stat, iPoint point)
-{
-
-	keyPopBackBtn(stat, point);
-	keyPopFishingGage(stat, point);
-}
-
-
+#else
+#endif
 
 
 void Boat::move(iPoint mp)
@@ -416,9 +482,9 @@ bool keyPopBackBtn(iKeyState stat, iPoint point)
 /////////////////////////////////////////////////////////////////
 iPopup* gagebar;
 iImage* gagebarRect;
-
-
 float gageDt;
+float throwDt;
+
 
 void drawPopFishingGageAfter(iPopup* me, float dt);
 void createPopFishingGage()
@@ -449,14 +515,17 @@ void createPopFishingGage()
 void freePopFishingGage()
 {
 	delete gagebar;
-	delete gagebarRect;
+//	delete gagebarRect;
 }
 
 void showPopFishingGage(bool show)
 {
 	gagebar->show(show);
 	if (show)
+	{
 		gageDt = 0.0f;
+		throwDt = 0.0f;
+	}
 }
 
 void drawPopFishingGageAfter(iPopup* me, float dt)
@@ -479,9 +548,12 @@ void drawPopFishingGageAfter(iPopup* me, float dt)
 	fillRect(rt);
 
 
-
-
-	
+	throwDt += dt;
+		
+	setRGBA(1, 0, 1, 1);
+	iPoint tp0 = bt->position + offMt;
+	iPoint tp1 = tp0 * (r*100);
+	drawLine(tp0, tp1 * _sin(180 * throwDt));
 
 
 }
@@ -494,6 +566,7 @@ void drawPopFishingGage(float dt)
 	gagebar->openPosition = iPointMake(gp.x+30 , gp.y-50);
 	gagebar->closePosition = iPointMake(gp.x+30 , gp.y-50 );
 
+	
 
 }
 
@@ -504,19 +577,59 @@ bool keyPopFishingGage(iKeyState stat, iPoint point)
 		return false;
 	if (gagebar->stat != iPopupStatProc)
 		return true;
-	if (stat == iKeyStateBegan)
+		
+	switch (stat)
 	{
+	case iKeyStateBegan:
+	
 		float r = fabsf(gageDt - _gageDt / 2);
 		printf("ability = %0.f %\n", r * 100);
 		showPopFishingGage(false);
+				
+		break;
 
-		setRGBA(1, 0, 0, 1);
-		drawLine(bt->position+offMt,bt->position+offMt*_sin(180*r));
+	case iKeyStateMoved:
+
+		break;
+
+	case iKeyStateEnded:
+
+		
+
+		break;
+
+		
+
 	}
+	return true;
+}
+
+iImage** throwline;
+
+void createFishingfloat()
+{
 
 
-	
+}
 
+void freeFishingfloat()
+{
+
+}
+
+void showFishingfloat(bool show)
+{
+
+}
+
+
+void drawFishingfloat(float dt)
+{
+
+}
+
+bool keyFishingfloat(iKeyState stat, iPoint point)
+{
 	return false;
 }
 

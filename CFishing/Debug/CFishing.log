@@ -1,17 +1,17 @@
 ﻿  SeaBoat.cpp
 C:\workspace\CFishing\CFishing\lib\iFPS.h(15,17): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\lib\iFPS.h(17,25): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(167,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(168,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(169,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(205,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(206,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(207,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(246,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(247,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(248,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(284,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(285,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(286,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(510,10): warning C4778: 'printf' : 서식 문자열 '%\n'이(가) 종결되지 않았습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(233,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(234,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(235,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(271,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(272,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(273,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(312,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(313,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(314,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(350,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(351,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(352,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(553,10): warning C4778: 'printf' : 서식 문자열 '%\n'이(가) 종결되지 않았습니다.
   CFishing.vcxproj -> C:\workspace\CFishing\Debug\CFishing.exe
