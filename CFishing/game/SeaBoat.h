@@ -26,21 +26,44 @@ struct MapTile
 
 #define natureSpeed 100
 
+enum BoatBehave
+{
+	BoatBehave_right = 0,
+	BoatBehave_left,
+	BoatBehave_up,
+	BoatBehave_down,
+	
+	BoatBehave_right_up,
+	BoatBehave_left_up,
+	BoatBehave_right_down,
+	BoatBehave_left_down,
+
+	BoatBehave_num,
+};
+
 struct Boat
 {
+	Boat();
+	~Boat();
+
+	void setBehave(BoatBehave be);
+	void setBehave(iPoint v);
+	void paint(float dt, iPoint off);
+	void move(iPoint movement);
+
+	BoatBehave behave;
+	iImage** imgs;
+	iImage* img;
+	iSize size;// for collision
 	iPoint position;
-	iSize size;
 	float speed;
-	Texture* tex;
+
+	uint8 throwing;// 0:찾기 1:던질준비, 2: 더졌을때, 3: 낚을준비
+	float throwResult, throwMin, throwMax;
+	float throwAniDt;
 
 	bool keep;
 	iPoint positionKeep;
-	int direction;
-
-	void Vec(iPoint v,float dt);
-
-	void move(iPoint movement);
-
 
 };
 
@@ -99,6 +122,26 @@ bool keyFishingfloat(iKeyState stat, iPoint point);
 선이 멈추면 그자리에작은 네모(찌)
 
 ->3초 뒤 네모(찌) 사라지고 게임시작
+
+
+낚시줄 던짐 (보트상태에서)
+
+-> new 화면 -> 낚시대 쥐고 마우스클릭(게이지)->hit -> 클릭 누르고있음으로 낚시 진행
+->조건만족(물고기hp  0 / 거리 0) -> 팝업 ->물괴기를 낚음
+
+or
+
+->-> 
+
+찌 팝업화면 -> hit -> 스페이스바로 릴 감기-> 방향키 미니게임 (시간제한)
+->성공시 물고기 hp크게감소//실패시 물고기 hp회복 or도망->
+조건만족(물고기hp  0 / 거리 0) -> 팝업 ->물괴기를 낚음
+
+
+end 포지션 왔을때 팝->뒤로가기//상점 팝업
+
+
+ 0 인곳 -> 낚시하기 팝업
 
 
 */

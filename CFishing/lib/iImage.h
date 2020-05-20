@@ -39,6 +39,7 @@ public:
 	int frame;
 	bool lastFrame;
 	int repeatNum, _repeatNum;	// 0 : inf
+	uint8 leftRight;// 0:left, 1:right
 	IMAGE_METHOD method;
 };
 

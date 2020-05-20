@@ -19,6 +19,7 @@ iImage::iImage()
 	frame = 0;
 	repeatNum = 0;
 	_repeatNum = 0;// inf
+	leftRight = 0;
 	method = NULL;
 }
 
@@ -129,14 +130,16 @@ void iImage::paint(float dt, iPoint off)
 	float s = 1.0f + linear(selectedDt / _selectedDt, 0.0f, selectedScale);
 	if (s == 0.0f)
 	{
-		drawImage(tex, p.x, p.y, TOP | LEFT);
+		//drawImage(tex, p.x, p.y, TOP | LEFT);
+		drawImage(tex, p.x, p.y, 0, 0, tex->width, tex->height,
+			TOP | LEFT, 1, 1, 2, 0, leftRight == 0 ? REVERSE_NONE : REVERSE_WIDTH);
 	}
 	else
 	{
 		p.x += tex->width / 2;
 		p.y += tex->height / 2;
 		drawImage(tex, p.x, p.y, 0, 0, tex->width, tex->height,
-			VCENTER | HCENTER, s, s, 2, 0, REVERSE_NONE);
+			VCENTER | HCENTER, s, s, 2, 0, leftRight == 0 ? REVERSE_NONE : REVERSE_WIDTH);
 	}
 }
 
