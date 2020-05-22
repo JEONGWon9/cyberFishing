@@ -16,8 +16,8 @@ struct MapTile
 
 #define SeaTileX 10
 #define SeaTileY 13
-#define SeaTileWidth 50
-#define SeaTileHeight 50
+#define SeaTileWidth 30
+#define SeaTileHeight 30
 
 
 #define tile_color_canMove		0, 0.8f, 1, 1
@@ -48,7 +48,7 @@ struct Boat
 
 	void setBehave(BoatBehave be);
 	void setBehave(iPoint v);
-	void paint(float dt, iPoint off);
+	void paint(float dt, iPoint off,iPoint v);
 	void move(iPoint movement);
 
 	BoatBehave behave;
@@ -58,19 +58,15 @@ struct Boat
 	iPoint position;
 	float speed;
 
-	uint8 throwing;// 0:찾기 1:던질준비, 2: 더졌을때, 3: 낚을준비
+	uint8 throwing;// 0:찾기 1:던질준비, 2: 던짐& 3: 낚시준비 
 	float throwResult, throwMin, throwMax;
 	float throwAniDt;
-
-	bool keep;
-	iPoint positionKeep;
-
 };
 
 
 
-#define MapCharWidth 30
-#define MapCharHeight 30
+#define MapCharWidth 20
+#define MapCharHeight 20
 
 // 한점에서 직선까지의 거리
 float getDistanceLine0(iPoint p, iPoint sp, iPoint ep);
@@ -101,8 +97,9 @@ void drawPopFishingGage(float dt);
 bool keyPopFishingGage(iKeyState stat, iPoint point);
 
 #define _gageDt 1.0f
-#define _throwDt 1.0f
-
+#define _throwAniDt 2.0f
+#define _biteDt 3.0f
+#define _floatDt 2.0f
 /////////////////////////////////////////////////////////////////
 //PopFishingfloat
 /////////////////////////////////////////////////////////////////
@@ -121,28 +118,19 @@ bool keyFishingfloat(iKeyState stat, iPoint point);
 높이값 비율로 보트 원점에서 선이 돌면서 바라보는 방향으로 날라감(방향조절)
 선이 멈추면 그자리에작은 네모(찌)
 
-->3초 뒤 네모(찌) 사라지고 게임시작
+->3초 뒤 네모(찌) 사라짐 ->클릭시 ->화면전환
+						->타이밍에클릭 못하면 화면전환안하고 기본으로 
+
 
 
 낚시줄 던짐 (보트상태에서)
 
--> new 화면 -> 낚시대 쥐고 마우스클릭(게이지)->hit -> 클릭 누르고있음으로 낚시 진행
+-> new 화면 -> 낚시대 쥐고 마우스클릭(게이지)->찌 팝업->타이밍 따라 클릭 ->hit!->
+화면전환 ->클릭 누르고있음으로 낚시 진행
 ->조건만족(물고기hp  0 / 거리 0) -> 팝업 ->물괴기를 낚음
 
-or
 
-->-> 
-
-찌 팝업화면 -> hit -> 스페이스바로 릴 감기-> 방향키 미니게임 (시간제한)
-->성공시 물고기 hp크게감소//실패시 물고기 hp회복 or도망->
-조건만족(물고기hp  0 / 거리 0) -> 팝업 ->물괴기를 낚음
-
-
-end 포지션 왔을때 팝->뒤로가기//상점 팝업
-
-
- 0 인곳 -> 낚시하기 팝업
-
+게이지량만큼 *바라보는방향 * (최소길이 +(최대길이-최소길이))
 
 */
 

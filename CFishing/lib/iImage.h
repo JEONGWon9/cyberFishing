@@ -33,6 +33,7 @@ public:
 	bool selected;
 	float selectedDt, _selectedDt;
 	float selectedScale;
+	float width, height;
 
 	bool animation;
 	float aniDt, _aniDt;
