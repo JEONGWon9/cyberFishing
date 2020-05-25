@@ -27,6 +27,7 @@
     <ClCompile Include="game\Loading.cpp" />
     <ClCompile Include="game\SelectMap.cpp" />
     <ClCompile Include="game\SeaBoat.cpp" />
+    <ClCompile Include="game\Fishing.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\iArray.h" />
@@ -55,6 +56,7 @@
     <ClInclude Include="game\Loading.h" />
     <ClInclude Include="game\SelectMap.h" />
     <ClInclude Include="game\SeaBoat.h" />
+    <ClInclude Include="game\Fishing.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="CFishing.ico" />

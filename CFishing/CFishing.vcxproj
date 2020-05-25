@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="game\App.cpp" />
     <ClCompile Include="game\Ending.cpp" />
+    <ClCompile Include="game\Fishing.cpp" />
     <ClCompile Include="game\Game.cpp" />
     <ClCompile Include="game\glew.c" />
     <ClCompile Include="game\Intro.cpp" />
@@ -49,6 +50,7 @@
   <ItemGroup>
     <ClInclude Include="game\App.h" />
     <ClInclude Include="game\Ending.h" />
+    <ClInclude Include="game\Fishing.h" />
     <ClInclude Include="game\Game.h" />
     <ClInclude Include="game\Intro.h" />
     <ClInclude Include="game\Loading.h" />

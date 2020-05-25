@@ -6,7 +6,7 @@
 #include "Ending.h"
 #include "SelectMap.h"
 #include "SeaBoat.h"
-
+#include "Fishing.h"
 
 void loadGame()
 {
@@ -19,6 +19,9 @@ void loadGame()
 #elif 1
 	loadSeaBoat();
 	gameState = gs_seaboat;
+#elif 0
+	loadFishing();
+	gameState = gs_fishing;
 #endif
 
 	AudioInfo ai[4] = {
@@ -41,6 +44,7 @@ void freeGame()
 	case gs_ending:		freeEnding(); break;
 	case gs_selectmap:  freeSelectMap(); break;
 	case gs_seaboat:	freeSeaBoat(); break;
+	case gs_fishing:	freeFishing(); break;
 	
 	}
 	freeAudio();
@@ -56,6 +60,7 @@ void drawGame(float dt)
 	case gs_ending:		drawEnding(dt); break;
 	case gs_selectmap:  drawSelectMap(dt); break;
 	case gs_seaboat:	drawSeaBoat(dt); break;
+	case gs_fishing:	drawFishing(dt); break;
 	}
 
 	drawLoading(dt);
@@ -72,5 +77,6 @@ void keyGame(iKeyState stat, iPoint point)
 	case gs_ending:		keyEnding(stat, point); break;
 	case gs_selectmap:  keySelectMap(stat, point); break;
 	case gs_seaboat:	keySeaBoat(stat, point); break;	
+	case gs_fishing:	keyFishing(stat, point); break;
 	}
 }

@@ -3,7 +3,7 @@
 #include "Menu.h"
 #include "Loading.h"
 #include "SelectMap.h"
-
+#include "Fishing.h"
 
 
 uint8 tile[SeaTileX * SeaTileY] = {
@@ -139,12 +139,11 @@ void drawSeaBoat(float dt)
 	
 
 	//boat//
-	bt->paint(dt, offMt,v);
+	bt->paint(dt,offMt);
 
 	if (getKeyDown() & keyboard_space)
 	{
 		showPopFishingGage(true);
-		
 	}
 
 	drawPopBackBtn(dt);
@@ -247,7 +246,7 @@ void Boat::setBehave(iPoint v)
 
 }
 
-void Boat::paint(float dt, iPoint off,iPoint v)
+void Boat::paint(float dt, iPoint off)
 {
 	img->paint(dt, position + off);
 	
@@ -268,11 +267,11 @@ void Boat::paint(float dt, iPoint off,iPoint v)
 		throwResult;//   bt->throwMin + r * (bt->throwMax - bt->throwMin);
 		throwAniDt += dt;
 		
-		
+		printf("throwResult = %f\n", throwResult);
 
 		iPoint sp = iPointMake(position.x + off.x, position.y + off.y);
 		
-		iPoint ep = iPointMake(sp.x+throwResult *v.x , sp.y + throwResult * v.y );
+		iPoint ep = iPointMake((sp.x+throwResult) , (sp.y + throwResult) );
 		
 		if(throwAniDt>_throwAniDt)
 		{ 
@@ -280,10 +279,11 @@ void Boat::paint(float dt, iPoint off,iPoint v)
 			throwing = 3;
 		}
 		
-		drawLine(sp,ep);
+		drawLine(sp,sp+ep * (throwAniDt / _throwAniDt));
 	
 		Texture* tex = createImage("assets/Boat/fishing_float.png");
-		drawImage(tex, ep.x, ep.y, HCENTER | VCENTER);
+		
+		drawImage(tex,sp.x+ep.x * (throwAniDt / _throwAniDt),sp.y+ ep.y * (throwAniDt / _throwAniDt), HCENTER | VCENTER);
 		freeImage(tex);
 		
 		
@@ -321,15 +321,17 @@ void Boat::paint(float dt, iPoint off,iPoint v)
 	}
 	else if(throwing == 3)
 	{
+		//biteDt = 0.0f;
 		biteDt += dt;
-
 		showFishingfloat(true);
+
 		if (biteDt > _biteDt)
 		{
 			showFishingfloat(false);
-			throwing == 4;
+			throwing = 0;
+			
 		}
-
+		
 	}
 	else if (throwing == 4)
 	{
@@ -689,21 +691,20 @@ bool keyPopFishingGage(iKeyState stat, iPoint point)
 		return false;
 	if (gagebar->stat != iPopupStatProc)
 		return true;
-		
 	switch (stat)
 	{
 	case iKeyStateBegan:
-	
+		
 		float r = fabsf(gageDt - _gageDt);
 		bt->throwing = 2;
-		bt->throwAniDt = 1.0f;
-		bt->throwResult = bt->throwMin + r * (bt->throwMax - bt->throwMin);
-		printf("ability = %0.f %\n", r * 100);
+		bt->throwAniDt = 0.0f;
+		bt->throwResult = bt->throwMin + r * (bt->throwMax/bt->throwMin);
+		printf("ability = %0.000f %\n", r * 100);
 		showPopFishingGage(false);
-				
+	
 		break;
 	}
-	return false;
+		
 }
 
 
@@ -743,6 +744,7 @@ void createFishingfloat()
 	pop->openPosition = iPointMake(devSize.width/2, devSize.height/2);
 	pop->closePosition = iPointMake(devSize.width/2, devSize.height /2);
 	pop->methodDrawAfter = drawFishingfloatAfter;
+	
 
 }
 
@@ -756,11 +758,11 @@ void showFishingfloat(bool show)
 {
 	fishingFloat->show(show);
 
-	if (show)
-	{
-		floatDt = 0.0f;
-		bt->throwing = 3;
-	}
+	//if (show)
+	//{
+	//	//floatDt = 0.0f;
+	//	bt->throwing = 3;
+	//}
 
 }
 
@@ -768,21 +770,15 @@ void drawFishingfloatAfter(iPopup* me, float dt)
 {
 	if (me->stat != iPopupStatProc)
 		return;
-
+	floatDt = 0.0f;
 	floatDt += dt;
 
 	iPoint fp = fbg->position + me->closePosition;
-	if (floatDt < _floatDt)//2초있다가사라지게하고싶음
-	{
-		setRGBA(1, 1, 1, 1);
-		Texture* tex = createImage("assets/Boat/fishingfloat.png");
-		drawImage(tex, 150 + fp.x / 2 * _sin(180 * floatDt / _floatDt), fp.y / 2, HCENTER | VCENTER);
-		freeImage(tex);
-	}
-	else if (floatDt > 4.0f)
-	{
-		bt->throwing = 4;
-	}
+	setRGBA(1, 1, 1, 1);
+	Texture* tex = createImage("assets/Boat/fishingfloat.png");
+
+	drawImage(tex, 100 + fp.x / 2 * _sin(90 * floatDt), fp.y / 2, HCENTER | VCENTER);
+	freeImage(tex);
 		
 
 	
@@ -807,11 +803,12 @@ bool keyFishingfloat(iKeyState stat, iPoint point)
 	switch (stat)
 	{
 	case iKeyStateBegan:
-		floatDt;
+	//	floatDt = 0.0f;
 		biteDt = 0.0f;
 		bt->throwing = 4;
 		showFishingfloat(false);
-
+		//METHOD_LOADING fishing[1] = { loadFishing };
+		//setLoading(gs_fishing, freeSeaBoat, fishing[0]);
 		break;
 	}
 	return false;

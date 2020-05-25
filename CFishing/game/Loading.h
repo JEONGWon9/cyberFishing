@@ -9,7 +9,7 @@
 
 
 #define gs_seaboat	 4
-
+#define gs_fishing	 5
 
 #define gs_none		0xFF
 extern int gameState;

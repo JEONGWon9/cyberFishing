@@ -16,8 +16,8 @@ struct MapTile
 
 #define SeaTileX 10
 #define SeaTileY 13
-#define SeaTileWidth 30
-#define SeaTileHeight 30
+#define SeaTileWidth 50
+#define SeaTileHeight 50
 
 
 #define tile_color_canMove		0, 0.8f, 1, 1
@@ -48,7 +48,7 @@ struct Boat
 
 	void setBehave(BoatBehave be);
 	void setBehave(iPoint v);
-	void paint(float dt, iPoint off,iPoint v);
+	void paint(float dt, iPoint off);
 	void move(iPoint movement);
 
 	BoatBehave behave;
@@ -96,10 +96,10 @@ void showPopFishingGage(bool show);
 void drawPopFishingGage(float dt);
 bool keyPopFishingGage(iKeyState stat, iPoint point);
 
-#define _gageDt 1.0f
+#define _gageDt 2.0f
 #define _throwAniDt 2.0f
 #define _biteDt 3.0f
-#define _floatDt 2.0f
+#define _floatDt 1.0f
 /////////////////////////////////////////////////////////////////
 //PopFishingfloat
 /////////////////////////////////////////////////////////////////

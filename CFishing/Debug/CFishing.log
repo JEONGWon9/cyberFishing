@@ -1,22 +1,22 @@
 ﻿  SeaBoat.cpp
 C:\workspace\CFishing\CFishing\lib\iFPS.h(15,17): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\lib\iFPS.h(17,25): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(286,26): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(286,20): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(330,13): warning C4553: '==': 식의 결과가 사용되지 않습니다. '='을(를) 의도했습니까?
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(347,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(348,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(286,60): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(286,21): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(349,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(387,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(388,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(350,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(351,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(389,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(429,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(430,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(390,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(391,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(431,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(469,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(470,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(432,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(433,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(471,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(701,10): warning C4778: 'printf' : 서식 문자열 '%\n'이(가) 종결되지 않았습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(779,72): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(779,22): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(472,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(473,11): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(702,10): warning C4778: 'printf' : 서식 문자열 '%\n'이(가) 종결되지 않았습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(780,59): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(780,21): warning C4244: '인수': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\workspace\CFishing\CFishing\game\SeaBoat.cpp(708): warning C4715: 'keyPopFishingGage': 모든 제어 경로에서 값을 반환하지는 않습니다.
   CFishing.vcxproj -> C:\workspace\CFishing\Debug\CFishing.exe
