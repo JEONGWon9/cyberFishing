@@ -59,8 +59,10 @@ struct Boat
 	float speed;
 
 	uint8 throwing;// 0:찾기 1:던질준비, 2: 던짐& 3: 낚시준비 
+	iPoint throwV;
 	float throwResult, throwMin, throwMax;
 	float throwAniDt;
+	Texture* texFloat;
 };
 
 
@@ -96,10 +98,11 @@ void showPopFishingGage(bool show);
 void drawPopFishingGage(float dt);
 bool keyPopFishingGage(iKeyState stat, iPoint point);
 
-#define _gageDt 2.0f
-#define _throwAniDt 2.0f
+#define _gageDt 1.0f
+#define _throwAniDt 1.0f
 #define _biteDt 3.0f
 #define _floatDt 1.0f
+#define _heightDt 1.0f
 /////////////////////////////////////////////////////////////////
 //PopFishingfloat
 /////////////////////////////////////////////////////////////////

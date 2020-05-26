@@ -121,7 +121,7 @@ void drawPopPoint(float dt)
 	fishpoint->paint(dt);
 }
 
-bool keyPopPoint(iKeyState stat, iPoint point)
+bool keyPopPoint(iKeyState stat, static iPoint point)
 {
 
 	if (fishpoint->bShow == false)

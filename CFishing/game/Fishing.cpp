@@ -37,6 +37,8 @@ void drawFishing(float dt)
 	drawImage(fishingrod, c.x, c.y,
 		0, 0, fishingrod->width, fishingrod->height, VCENTER | HCENTER, 1.0f, 1.0f,
 		2, rodDegree, REVERSE_NONE);
+
+	
 }
 
 void keyFishing(iKeyState stat, iPoint point)
@@ -58,6 +60,7 @@ void keyFishing(iKeyState stat, iPoint point)
 	}
 	else if (stat == iKeyStateEnded)
 	{
+		rodDegree = 0;
 		roding = false;
 	}
 }
