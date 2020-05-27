@@ -16,10 +16,10 @@ void loadGame()
 #elif 0
 	loadMenu();
 	gameState = gs_menu;
-#elif 1
+#elif 0
 	loadSeaBoat();
 	gameState = gs_seaboat;
-#elif 0
+#elif 1
 	loadFishing();
 	gameState = gs_fishing;
 #endif

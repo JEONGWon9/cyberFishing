@@ -32,6 +32,7 @@ float throwDt;
 float floatDt;
 float biteDt;
 float heightDt;
+float bfloatAniDt;
 
 void loadSeaBoat()
 {
@@ -283,7 +284,7 @@ void Boat::paint(float dt, iPoint off)
 	else if (throwing == 2)
 	{
 		// 던짐
-		printf("throwResult = %f\n", throwResult);
+		//printf("throwResult = %f\n", throwResult);
 		iPoint sp = position + off;
 		iPoint ep = position + throwV * throwResult + off;
 		
@@ -315,14 +316,16 @@ void Boat::paint(float dt, iPoint off)
 		biteDt += dt;
 		if (biteDt > _biteDt)
 		{	// 시간 오버 - 취소처리
+			biteDt = _biteDt;
 			showFishingfloat(false);
+
 			throwing = 0;
 		}
 		
 	}
 	else if (throwing == 4)
 	{
-		throwing = 0;
+	
 	}
 }
 
@@ -719,6 +722,7 @@ iPopup* fishingFloat;
 iImage* fbg;
 
 Texture* texBFloat;
+float _bfloatAniDt, bfloatAniDegree;
 
 void drawFishingfloatAfter(iPopup* me, float dt);
 void createFishingfloat()
@@ -732,9 +736,7 @@ void createFishingfloat()
 		iSize size = iSizeMake(200, 200);
 		g->init(size);
 
-		setRGBA(1, 0, 0, 1);
-		g->drawRect(0, 0, size.width + 1, size.height + 1,0);
-
+	
 		setRGBA(0, 1, 1, 1);
 		g->fillRect(0, 0, size.width, size.height, 0);
 
@@ -744,11 +746,14 @@ void createFishingfloat()
 	}
 	pop->addObject(fbg);
 
-	pop->openPosition = iPointMake(devSize.width/2+200, devSize.height/2);
-	pop->closePosition = iPointMake(devSize.width/2+200, devSize.height /2);
+	pop->openPosition = iPointMake(devSize.width/2 +200, devSize.height/2-200);
+	pop->closePosition = iPointMake(devSize.width/2+200 , devSize.height /2-200);
 	pop->methodDrawAfter = drawFishingfloatAfter;
 	
 	texBFloat = createImage("assets/Boat/fishingfloat.png");
+	bfloatAniDt = 0.0f;
+	_bfloatAniDt = 0.5f; // 물렸을때0.2f;
+	bfloatAniDegree = 8.0f;// 16.f;
 }
 
 void freeFishingfloat()
@@ -769,25 +774,31 @@ void showFishingfloat(bool show)
 	//}
 
 }
-
+#define floatAniDt 4.5f
 void drawFishingfloatAfter(iPopup* me, float dt)
 {
-	float floatdgree = 0;
 	if (me->stat != iPopupStatProc)
 		return;
 
-	floatDt += dt;
+
+
 	setRGBA(1, 1, 1, 1);
-	iPoint fp = fbg->position+me->closePosition;
+	iPoint fp = fbg->position + iPointMake(fbg->tex->width/2, fbg->tex->height/2);
 
-	iPoint Mfp = iPointMake(fp.x / 2, fp.y / 2);
-	iPoint Bfp = Mfp - iPointMake(0, texBFloat->height / 2);
-	Bfp = iPointRotate(Bfp, Mfp, floatdgree);
-
-	drawImage(texBFloat, Bfp.x, Bfp.y,
-		0, 0, texBFloat->width, texBFloat->height, VCENTER | HCENTER,
-		1.0f, 1.0f, 2, floatdgree * _sin(180 * floatDt), REVERSE_NONE);
-
+	bfloatAniDt += dt;
+	
+	if (bfloatAniDt > floatAniDt)//물렸을때
+	{
+		_bfloatAniDt = 0.2f;
+		bfloatAniDegree = 16.f;
+		//#Bug  
+	}
+	float degree = bfloatAniDegree * _sin(360 * bfloatAniDt / _bfloatAniDt);
+	if (degree < 0)
+		degree += 360;
+	
+	drawImage(texBFloat, fp.x, fp.y, 0, 0, texBFloat->width, texBFloat->height,
+		VCENTER | HCENTER, 1.0f, 1.0f, 2, degree, REVERSE_NONE);
 }
 
 
@@ -809,16 +820,24 @@ bool keyFishingfloat(iKeyState stat, iPoint point)
 	switch (stat)
 	{
 	case iKeyStateBegan:
-#if 0// test 취소처리
-		bt->throwing = 0;
-		biteDt = 0.0f;
-		floatDt = 0.0f;
-		showFishingfloat(false);
+
+		if (bfloatAniDt < floatAniDt)
+		{
+			showFishingfloat(false);
+		
+			bfloatAniDt = 0.0f;
+			biteDt = 0.0f;
+			floatDt = 0.0f;
+			bt->throwing = 0;
+		}
+		else if (bfloatAniDt > floatAniDt)
+		{
+			METHOD_LOADING fishing[1] = { loadFishing };
+			setLoading(gs_fishing, freeSeaBoat, fishing[0]);
+
+		}
 		break;
-#endif
-		METHOD_LOADING fishing[1] = { loadFishing };
-		setLoading(gs_fishing, freeSeaBoat, fishing[0]);
-		break;
+
 	}
 	return false;
 }

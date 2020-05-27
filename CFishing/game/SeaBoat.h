@@ -100,7 +100,7 @@ bool keyPopFishingGage(iKeyState stat, iPoint point);
 
 #define _gageDt 1.0f
 #define _throwAniDt 1.0f
-#define _biteDt 3.0f
+#define _biteDt 6.0f
 #define _floatDt 1.0f
 #define _heightDt 1.0f
 /////////////////////////////////////////////////////////////////
