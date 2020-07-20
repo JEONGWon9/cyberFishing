@@ -126,36 +126,36 @@ iPoint iPointRotate(const iPoint& p, const iPoint& t, float degree)
 	return _p;
 #endif
 }
-float iPointDistance(iPoint& p1, iPoint& p2)
+float iPointDistance(const iPoint& p0, const iPoint& p1)
 {
-	return (p1.x - p2.x) * (p1.x - p2.x) - (p1.y - p2.y) * (p1.y - p2.y);
+	return sqrt((p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y));
 }
 
-
-float iPointAngle(iPoint& v1, iPoint& v2, iPoint& v3)
+float iPointAngle(const iPoint& v1, const iPoint& v2, const iPoint& v3)
 {
-	iPoint A = iPointMake(v1.x - v2.x, v1.y - v2.y);
-	iPoint B = iPointMake(v3.x - v2.x, v3.x - v2.y);
-	iPoint O = iPointZero;
-	
-	double OA = iPointDistance(O, A);
-	double OB = iPointDistance(O, B);
-	double AB = iPointDistance(A, B);
 
-	//float degree = acos(A  B / iPointLength(A) * iPointLength(B));
+	iPoint a = iPointMake(v1.x - v2.x, v1.y - v2.y); // v1-v2;
+	iPoint b = iPointMake(v3.x - v2.x, v3.y - v2.y); // v3-v2;
+	iPoint o = iPointZero;
 
-	float degree = acos((OA * OA + OB * OB - AB * AB / (2 * OA * OB))) * 180 / M_PI;
+	double oa = iPointDistance(o, a);
+	double ob = iPointDistance(o, b);
+	double ab = iPointDistance(a, b);
+	float degree = acos((oa * oa + ob * ob - ab * ab) / (2 * oa * ob)) * 180 / M_PI;
 
-
-	if (B.y > A.y)
+	if (a.y > b.y)
 	{
 		if (degree)
 			degree = 360 - degree;
 	}
-	else if (B.y = A.y)
-	{
-		degree = 0;
-	}
+
+	if (degree > 180)
+		degree -= 360;
+
+
+
 
 	return degree;
+
 }
+

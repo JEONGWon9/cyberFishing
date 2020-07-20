@@ -1,3 +1,7 @@
+#if(TOOL==0)
+
+
+
 #include "App.h"
 
 #include "Game.h"
@@ -398,3 +402,5 @@ void enforceResolution(int edge, RECT& rect, int win_border_width, int win_borde
     }
     }
 }
+
+#endif

@@ -1,5 +1,6 @@
 #include "iStd.h"
 
+
 uint8 float2uint8(float f)
 {
     return f * 0xFF;
@@ -17,7 +18,6 @@ float _stringBorder;
 float _stringBorderR, _stringBorderG, _stringBorderB, _stringBorderA;
 
 DWORD prevTickCount;
-
 static bool* keys;
 static uint32 keyDown, keyStat;
 uint32 getKeyDown() { return keyDown; }
@@ -25,6 +25,9 @@ bool getKeyDown(uint32 key) { return keyDown & key; }
 uint32 getKeyStat() { return keyStat; }
 bool getKeyStat(uint32 key) { return keyStat & key; }
 
+iVBO* gVbo = NULL;
+Texture** texGdi;
+float _lineWidth;
 void loadLib(HDC hDC)
 {
     setupOpenGL(true, hDC);
@@ -59,7 +62,45 @@ void loadLib(HDC hDC)
     srand(time(NULL));
     void sRandom();
     sRandom();
+
+    gVbo = new iVBO();
+
+    texGdi = (Texture**)malloc(sizeof(Texture*) * 2);
+
+    Texture* tex = createTexture(32, 32);
+    setTexture(CLAMP, MIPMAP);
+    fbo->bind(tex);
+    //fbo->clear(1, 0, 1, 1);
+
+    iSize s = devSize;
+    devSize = iSizeMake(32, 32);
+    iRect v = viewport;
+    viewport = iRectMake(0, 0, 32, 32);
+
+
+
+    float m[16];
+    memcpy(m, mProjection->d(), sizeof(float) * 16);
+    mProjection->loadIdentity();
+    mProjection->ortho(0, 32, 32, 0, -1000, 1000);
+        fillCircle(16, 16, 16);
+    devSize = s;
+    viewport = v;
+    memcpy(mProjection->d(), m, sizeof(float) * 16);
+
+    fbo->unbind();
+    texGdi[0] = tex;
+
+    tex = createTexture(32, 32);
+    fbo->bind(tex);
+    fbo->clear(1, 1, 1, 1);
+    fbo->unbind();
+    texGdi[1] = tex;
+
+
+
 }
+
 
 void freeLib()
 {
@@ -67,7 +108,13 @@ void freeLib()
     freeImage(texFboForiPopup);
     setupOpenGL(false, NULL);
 
+
     free(keys);
+    delete gVbo;
+
+    for (int i = 0; i < 2; i++)
+        freeImage(texGdi[i]);
+    free(texGdi);
 }
 
 bool takeScreenshot = false;
@@ -85,8 +132,10 @@ void drawScreenshot()
     else
     {
         setRGBA(1, 1, 1, 1);
-        fillRect(devSize.width / 2 - 100, devSize.height / 2 - 100, 200, 200);
+       // fillRect(devSize.width / 2 - 100, devSize.height / 2 - 100, 200, 200);
     }
+
+
 }
 void checkScreenshot()
 {
@@ -107,10 +156,37 @@ void checkScreenshot()
     }
 }
 
+iPoint zoomPosition;
+float zoomRate;
+#define _zoomDt 0.5f
+float zoomDt = _zoomDt;
+
+void zoomLib(iPoint point, float rate)
+{
+    zoomPosition = point;
+    zoomRate = rate;
+    zoomDt = 0.0f;
+}
+
+iPoint shakePosition;
+float _shakeDt;
+float shakeDt = _shakeDt;
+
+void shakeLib(int range, float duration)
+{
+    int x = random() % range; if (random() % 2) x *= -1;
+    int y = random() % range; if (random() % 2) x *= -1;
+    shakePosition = iPointMake(x, y);
+    _shakeDt = duration;
+    shakeDt = 0.0f;
+
+}
+
+
 void drawLib(Method_Paint method)
 {
     DWORD d = GetTickCount();
-    float delta = (d - prevTickCount)/1000.f;
+    float delta = (d - prevTickCount) / 1000.f;
     prevTickCount = d;
 
     fbo->bind();// --------------------
@@ -118,7 +194,12 @@ void drawLib(Method_Paint method)
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
     method(delta);
+    void ttt(float dt);
+    ttt(delta);
+
+
     keyDown = 0;
 
     checkScreenshot();
@@ -128,14 +209,49 @@ void drawLib(Method_Paint method)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     setRGBA(1, 1, 1, 1);
+  
 
     Texture* tex = fbo->getTexture();
-#if 1
-    //drawImage(tex, 0, 0, TOP | LEFT);
-    drawImage(tex, 0, 0,
-        0, 0, tex->width, tex->height, TOP | LEFT,
-        1.0f, 1.0f, 2, 0, REVERSE_HEIGHT);
-#endif
+    if (zoomDt < _zoomDt || shakeDt < _shakeDt)
+    {
+        iPoint c = iPointMake(devSize.width / 2, devSize.height / 2);
+        float r = 1.0f;
+        if (zoomDt < _zoomDt)
+        {
+            r = 1.0f + (zoomRate - 1.0f) * _sin(180 * zoomDt / _zoomDt);
+            zoomDt += delta;
+            iPoint dp = zoomPosition - c;
+            iPoint rp = dp * r;
+            c -= rp - dp;
+        }
+        if (shakeDt < _shakeDt)
+        {
+            // cycle 3 = shakePosition * (1.0f + 0.5f + 0.25f)
+            float r = shakeDt / _shakeDt;
+            if (r < 1.0f / 1.75f)
+            {
+                c += shakePosition * _sin(180 * r / (1.0f / 1.75f));
+            }
+            else if (r < 1.5f / 1.75f)
+            {
+                c += shakePosition * 0.5f * _sin(180 * (r - 1.0f / 1.75f) / (0.5f / 1.75f));
+            }
+            else
+            {
+                c += shakePosition * 0.25f * _sin(180 * (r - 1.5f / 1.75f) / (0.25f / 1.75f));
+            }
+            shakeDt += delta;
+        }
+        drawImage(tex, c.x, c.y,
+            0, 0, tex->width, tex->height, VCENTER | HCENTER,
+            r, r, 2, 0, REVERSE_HEIGHT);
+    }
+    else
+    {
+        drawImage(tex, 0, 0,
+            0, 0, tex->width, tex->height, TOP | LEFT,
+            1.0f, 1.0f, 2, 0, REVERSE_HEIGHT);
+    }
 
     drawScreenshot();
 
@@ -156,17 +272,228 @@ void drawLib(Method_Paint method)
     float s = 1.0 / num;
     for (i = 0; i < n; i++)
     {
-        drawImage(tex, w * (i%num), h * (i/num),
+        drawImage(tex, w * (i % num), h * (i / num),
             0, 0, tex->width, tex->height, TOP | LEFT,
             s, s, 2, 0, REVERSE_HEIGHT);
     }
 #endif
 
-#if 0// minimap
+#if 0// mipimap
     drawImage(tex, devSize.width - 50, devSize.height - 50,
         0, 0, tex->width, tex->height, BOTTOM | RIGHT,
         0.2f, 0.2f, 2, 0, REVERSE_HEIGHT);
 #endif
+  
+};
+iShaderToy* shadertoy = NULL;
+void testShaderToy(float dt)
+{
+    if (shadertoy == NULL)
+    {
+        STInput si[3] =
+        {
+            {
+                NULL,
+                {
+                    {// BufA
+                        "assets/shader/etc/Main.vert",
+                        "assets/shader/etc/BufA.frag",
+                    },
+                    {// BufB
+                        "assets/shader/etc/Main.vert",
+                        "assets/shader/etc/BufB.frag",
+                    },
+                    {// BufC
+                        "assets/shader/etc/Main.vert",
+                        "assets/shader/etc/BufC.frag",
+                    },
+                    {// BufD
+                        "assets/shader/etc/Main.vert",
+                        "assets/shader/etc/BufD.frag",
+                    },
+                    {// Main
+                        "assets/shader/etc/Main.vert",
+                        "assets/shader/etc/Main.frag",
+                        {
+                            { -1, "assets/ex.png", CLAMP, LINEAR, false },
+                            { 1, NULL, CLAMP, LINEAR, false },
+                            { 2, NULL, CLAMP, LINEAR, false },
+                            { 3, NULL, CLAMP, LINEAR, false },
+                        },
+                    },
+                }
+            },
+            {
+                "assets/shader/etc/CrossyCommon.frag",
+                {
+                    {// BufA
+                    "assets/shader/etc/CrossyMain.vert",
+                    "assets/shader/etc/CrossyBufA.frag",
+                    {
+                        { 0, NULL, CLAMP, NEAREST, false },
+                        { -1, NULL, CLAMP, LINEAR, false },
+                        { -1, NULL, CLAMP, LINEAR, false },
+                        { -1, "assets/rand.png", REPEAT, MIPMAP, false },
+                    }
+                    },
+                    {// BufB
+                        "assets/shader/etc/CrossyMain.vert",
+                        "assets/shader/etc/CrossyBufB.frag",
+                        {
+                            { 0, NULL, CLAMP, NEAREST, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, "assets/rand.png", REPEAT, NEAREST, false },
+                        }
+                    },
+                    {// BufC
+                        "assets/shader/etc/CrossyMain.vert",
+                        "assets/shader/etc/TvName.frag",
+                        {
+                            { 0, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, REPEAT, MIPMAP, false },
+                        }
+
+                    },
+                    {},// BufD
+                    {// Main
+                        "assets/shader/etc/CrossyMain.vert",
+                        "assets/shader/etc/CrossyMain.frag",
+                        {
+                            {  0, NULL, CLAMP, NEAREST, false },
+                            {  1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                        },
+                    },
+                },
+            },
+            {
+                "assets/shader/etc/CrossyCommon.frag",
+                {
+                    {// BufA
+                    "assets/shader/etc/PixelDungeonMain.vert",
+                    "assets/shader/etc/PixelDungeonA.frag",
+                    {
+                        { 0, NULL, CLAMP, LINEAR, false },
+                        { -1, NULL, CLAMP, LINEAR, false },
+                        { -1, NULL, CLAMP, LINEAR, false },
+                        { -1, NULL, REPEAT, MIPMAP, false },
+                    }
+                    },
+                    {// BufB
+                        "assets/shader/etc/PixelDungeonMain.vert",
+                        "assets/shader/etc/PixelDungeonB.frag",
+                        {
+                            { 0, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                        }
+                    },
+                    {// BufC
+                         "assets/shader/etc/PixelDungeonMain.vert",
+                         "assets/shader/etc/PixelDungeonC.frag",
+                         {
+                             { 0, NULL, CLAMP, LINEAR, false },
+                             { -1, NULL, CLAMP, LINEAR, false },
+                             { -1, NULL, CLAMP, LINEAR, false },
+                             { -1, NULL, CLAMP, LINEAR, false },
+                         }
+                         
+                    },
+                    {// BufD
+                         "assets/shader/etc/PixelDungeonMain.vert",
+                         "assets/shader/etc/PixelDungeonD.frag",
+                         {
+                             { 0, NULL, CLAMP, LINEAR, false },
+                             { -1, NULL, CLAMP, LINEAR, false },
+                             { -1, NULL, CLAMP, LINEAR, false },
+                             { -1, NULL, CLAMP, LINEAR, false },
+                         }                    
+                    },
+                    {// Main
+                        "assets/shader/etc/PixelDungeonMain.vert",
+                        "assets/shader/etc/PixelDungeonMain.frag",
+                        {
+                            {  0, NULL, CLAMP, LINEAR, false },
+                            {  1, NULL, CLAMP, LINEAR, false },
+                            { -1, NULL, CLAMP, LINEAR, false },
+                            { -1, "assets/dg.png", CLAMP, LINEAR, false },
+                        },
+                    },
+                },
+            },
+
+        };
+
+        shadertoy = new iShaderToy(&si[2]);
+    }
+    glDisable(GL_BLEND);
+    shadertoy->paint(dt);
+    glEnable(GL_BLEND);
+}
+//
+//void test()
+//{
+//    const char* str = "Here is Kyung Sung Univ. in Busan";
+//    int lineNum;
+//    char** line = iString::getStringLine(str, lineNum, ' ');
+//
+//    iSort s;
+//    s.init();
+//    for (int i = 0; i < lineNum; i++)
+//        s.add(strlen(line[i]));
+//    s.update();
+//
+//    for (int i = 0; i < lineNum; i++)
+//    {
+//        printf("%s %s", line[s.get(i)], i < lineNum ? " " : "\n");
+//    }
+//    for (int i = 0; i < lineNum; i++)
+//    {
+//        printf("%s %s", line[s.get(lineNum - 1 - i)], i < lineNum ? " " : "\n");
+//    }
+//
+//    iString::freeStringLine(line, lineNum);
+//
+//    return;
+//}
+void ttt(float dt)
+{
+
+
+
+
+
+    //testShaderToy(dt);
+    //
+    //return ; 
+
+
+    //setRGBA(1, 0, 1, 1);
+    //fillRect(150, 150, 100, 100, 10);
+    setRGBA(1, 0, 0, 1);
+    setLineWidth(5);
+    for (int i = 0; i < 5; i++)
+    {
+        drawRect(50, 50*i, 50, 50, 5*i);
+      
+    }
+
+
+    drawLine(10, 10, 50, 50);
+
+
+    setRGBA(1, 1, 1, 1);
+    drawEllipse(100, 100, 40, 30,5, 0);
+    setRGBA(0, 0, 1, 1);
+    fillEllipse(200, 200, 30, 40, 0);
+    
+    return;
+   
 }
 
 static void keyLib(uint32& key, iKeyState stat, int c)
@@ -184,6 +511,9 @@ static void keyLib(uint32& key, iKeyState stat, int c)
         case VK_DOWN:   key |= keyboard_down; break;
 
         case VK_SPACE:  key |= keyboard_space; break;
+
+  
+   
         }
     }
     else if (stat == iKeyStateEnded)
@@ -201,6 +531,8 @@ static void keyLib(uint32& key, iKeyState stat, int c)
         case VK_SPACE:  key &= ~keyboard_space; break;
         }
     }
+     
+
 }
 
 void keyLib(iKeyState stat, int c)
@@ -224,6 +556,102 @@ void resizeLib(int width, int height)
 {
     reshapeOpenGL(width, height);
 }
+
+iVBO::iVBO(int qNum_)
+{
+    _qNum = qNum_;
+    qNum = 0;
+    q = (iQuad*)malloc(sizeof(iQuad) * _qNum);
+    indices = (short*)malloc(sizeof(short) * 6 * _qNum);
+
+    for (int i = 0; i < _qNum; i++)
+    {
+        iQuad* quad = &q[i];
+        quad->tl.p[2] = 0;  quad->tl.p[3] = 1;
+        quad->tr.p[2] = 0;  quad->tr.p[3] = 1;
+        quad->bl.p[2] = 0;  quad->bl.p[3] = 1;
+        quad->br.p[2] = 0;  quad->br.p[3] = 1;
+        quad->tl.uv = iPointMake(0, 0);
+        quad->tr.uv = iPointMake(1, 0);
+        quad->bl.uv = iPointMake(0, 1);
+        quad->br.uv = iPointMake(1, 1);
+
+        indices[6 * i + 0] = 4 * i + 0;
+        indices[6 * i + 1] = 4 * i + 1;
+        indices[6 * i + 2] = 4 * i + 2;
+        indices[6 * i + 3] = 4 * i + 1;
+        indices[6 * i + 4] = 4 * i + 2;
+        indices[6 * i + 5] = 4 * i + 3;
+    }
+    tex = NULL;
+
+    glGenBuffers(1,&vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(iQuad) * _qNum, NULL, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    programID = 0;
+  
+}
+
+iVBO::~iVBO()
+{
+    free(q);
+    free(indices);
+
+    freeImage(tex);
+    glDeleteBuffers(1, &vbo);
+
+}
+
+void iVBO::paint(float dt)
+{
+    glUseProgram(programID);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(iQuad) * qNum, q);
+
+    GLuint positionAttr = glGetAttribLocation(programID, "position");
+    GLuint texCoordAttr = glGetAttribLocation(programID, "texCoord");
+    GLuint colorAttr = glGetAttribLocation(programID, "color");
+
+    glEnableVertexAttribArray(positionAttr);
+    glEnableVertexAttribArray(texCoordAttr);
+    glEnableVertexAttribArray(colorAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, sizeof(iVertex), (const void*)0);
+    glVertexAttribPointer(texCoordAttr, 2, GL_FLOAT, GL_FALSE, sizeof(iVertex),  (const void*)offsetof(iVertex, uv));
+    glVertexAttribPointer(colorAttr, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(iVertex), (const void*)offsetof(iVertex, c));
+
+
+    GLuint tid = glGetAttribLocation(programID, "texID");
+    glUniform1i(tid, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex->texID);
+
+
+    GLuint mp = glGetUniformLocation(programID, "mProjection");
+    glUniformMatrix4fv(mp, 1, false, mProjection->d());
+
+    GLuint mm = glGetUniformLocation(programID, "mModelview");
+    glUniformMatrix4fv(mm, 1, false, mModelview->d());//
+
+
+    glDrawElements(GL_TRIANGLE_STRIP, 6 * qNum, GL_UNSIGNED_SHORT, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glDisableVertexAttribArray(texCoordAttr);
+    glDisableVertexAttribArray(colorAttr);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+  
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
+
+
+
 
 iFBO::iFBO(int width, int height)
 {
@@ -336,55 +764,200 @@ void getRGBA(float& r, float& g, float& b, float& a)
 
 void setLineWidth(float lineWidth)
 {
-    glLineWidth(lineWidth);
+    _lineWidth  = lineWidth ;
 }
+
 void drawLine(iPoint sp, iPoint ep)
 {
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+    float theta = iPointAngle(iPointMake(1, 0), iPointZero, sp - ep);
+    //                              sp.y-linewidth/2
+    // sp.x-linewidth/2                                          ep.x - linewidth/2
+    //                              ep.y-linewidth/2
 
-    iPoint position[2] = { sp, ep };
-    float color[2][4] = { {_r, _g, _b, _a}, {_r, _g, _b, _a} };
-    glVertexPointer(2, GL_FLOAT, 0, position);
-    glColorPointer(4, GL_FLOAT, 0, color);
-    glDrawArrays(GL_LINES, 0, 2);
+    float cosT = _cos(theta);
+    float sinT = _sin(theta);
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+    float lw = _lineWidth / 2;
+   
+    iPoint tl = iPointMake(-lw * cosT + lw * sinT, -lw * sinT - lw * cosT);//iPointMake(-lw, -lw);
+    iPoint tc = iPointMake(lw * cosT, -lw * cosT);//iPointMake(0, -lw);
+    iPoint tr = iPointMake(lw * cosT + lw * sinT, lw * sinT + lw * cosT);//iPointMake(lw, -lw);
+    iPoint bl = iPointMake(-lw * cosT - lw * sinT, -lw * sinT + lw * cosT);//iPointMake(-lw, lw);
+    iPoint bc = iPointMake(-lw * cosT, lw * cosT);//iPointMake(0, lw);
+    iPoint br = iPointMake(lw * cosT - lw * sinT, lw * sinT - lw * cosT);//iPointMake(lw, lw);
+
+    gVbo->tex = texGdi[0];
+    gVbo->programID = getProgramID();
+
+    gVbo->qNum = 3;
+    iColor4b c = iColor4bMake(_r * 255, _g * 255, _b * 255, _a * 255);
+    iQuad* q = &gVbo->q[0];
+    memcpy(&q->tl.p, &(sp + tl), sizeof(iPoint));
+    memcpy(&q->tr.p, &(ep + tc), sizeof(iPoint));
+    memcpy(&q->bl.p, &(sp + bl), sizeof(iPoint));
+    memcpy(&q->br.p, &(ep + bc), sizeof(iPoint));
+    q->tl.uv = iPointMake(0, 0);
+    q->tr.uv = iPointMake(0.5, 0);
+    q->bl.uv = iPointMake(0, 1);
+    q->br.uv = iPointMake(0.5,1);
+    q->tl.c = c;
+    q->tr.c = c;
+    q->bl.c = c;
+    q->br.c = c;
+    q = &gVbo->q[1];//tc, bc, tc, bc
+    memcpy(&q->tl.p, &(sp + tc), sizeof(iPoint));
+    memcpy(&q->tr.p, &(ep+ bc), sizeof(iPoint));
+    memcpy(&q->bl.p, &(sp + tc), sizeof(iPoint));
+    memcpy(&q->br.p, &(ep + bc), sizeof(iPoint));
+    q->tl.uv = iPointMake(0.5, 0);
+    q->tr.uv = iPointMake(0.5, 0);
+    q->bl.uv = iPointMake(0.5, 1);
+    q->br.uv = iPointMake(0.5, 1);
+    q->tl.c = c;
+    q->tr.c = c;
+    q->bl.c = c;
+    q->br.c = c;
+    q = &gVbo->q[2];//tc, bc, tr, br
+    memcpy(&q->tl.p, &(sp + tc), sizeof(iPoint));
+    memcpy(&q->tr.p, &(ep + bc), sizeof(iPoint));
+    memcpy(&q->bl.p, &(sp + tr), sizeof(iPoint));
+    memcpy(&q->br.p, &(ep + br), sizeof(iPoint));
+    q->tl.uv = iPointMake(0.5, 0);
+    q->tr.uv = iPointMake(1, 0);
+    q->bl.uv = iPointMake(0.5, 1);
+    q->br.uv = iPointMake(1, 1);
+    q->tl.c = c;
+    q->tr.c = c;
+    q->bl.c = c;
+    q->br.c = c;
+
+   
+
+    gVbo->paint(0.0f);
 }
 
 void drawLine(float x0, float y0, float x1, float y1)
 {
-    drawLine(iPointMake(x0, y0), iPointMake(x1, y1));
+    shaderdrawline(iPointMake(x0, y0), iPointMake(x1, y1));
 }
 
-static void drawPoly(iPoint* poly, int num, bool fill)
+iPoint convertToDevice(iPoint& p)
 {
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+    p.x = p.x / devSize.width * viewport.size.width - viewport.origin.x;
+    p.y = p.y / devSize.height * viewport.size.height - viewport.origin.y;
+    p.y = viewport.size.height - p.y;
+    return p;
+}
 
-    //float color[num][4];
-    float color[4][4] = { {_r, _g, _b, _a}, {_r, _g, _b, _a},
-        {_r, _g, _b, _a}, {_r, _g, _b, _a} };
-    glVertexPointer(2, GL_FLOAT, 0, poly);
-    glColorPointer(4, GL_FLOAT, 0, color);
 
-    glDrawArrays(fill ? GL_TRIANGLE_FAN : GL_LINE_LOOP, 0, num);
-    //glDrawElements;
+void shaderdrawline(iPoint sp, iPoint ep)
+{
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        str = loadFile("assets/shader/gdi/line.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
+  
+    float lw = _lineWidth / 2;
+    float d = iPointDistance(sp, ep) / 2;
+
+    float p[4][4] = {
+        {-d - lw, lw, 0, 1},   { +d + lw, lw, 0, 1},
+        {-d - lw, -lw, 0, 1},   { +d + lw,- lw, 0, 1},
+    };
+    
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+
+    glUniformMatrix4fv(glGetUniformLocation(pid, "mProjection"), 1, false, mProjection->d());
+
+    GLuint mm = glGetUniformLocation(pid, "mModelview");
+    iMatrix mv;
+    mv.loadIdentity();
+    iPoint c = (sp + ep) / 2;
+    mv.translate(c.x, c.y, 0);
+    float theta = iPointAngle(iPointMake(1, 0), iPointZero, sp - ep);
+    mv.rotate(0, 0, 1, theta);
+    glUniformMatrix4fv(mm, 1, false, mv.d()); //mModelview->d());
+
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+   
+    sp.y = devSize.height - sp.y;
+    glUniform2fv(glGetUniformLocation(pid, "sp"),1,(float*)&sp);
+    ep.y = devSize.height - ep.y;
+    glUniform2fv(glGetUniformLocation(pid, "ep"), 1,(float*)&ep);
+    glUniform1f(glGetUniformLocation(pid, "linewidth"), _lineWidth);
+    glUniform4f(glGetUniformLocation(pid, "color"), _r, _g, _b, _a);
+
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void drawRect(float x, float y, float width, float height, float radius)
 {
-    iPoint p[4] = {
-        {x, y},                 // top|left
-        {x, y + height},        // bottom|left
-        {x + width, y + height},// bottom|right
-        {x + width, y}          // top|right
+
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        str = loadFile("assets/shader/gdi/drawRect.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
+
+    float lw = _lineWidth / 2;
+
+    float p[4][4] = {
+        {-width - lw , height + lw, 0, 1},   {width+lw, height +lw, 0, 1},
+        {-width - lw , -height - lw, 0, 1},  {width+lw, -height-lw , 0, 1},
     };
-    drawPoly(p, 4, false);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+    
+    glUniformMatrix4fv(glGetUniformLocation(pid, "mProjection"), 1, false, mProjection->d());
+
+    iMatrix mv;
+    mv.loadIdentity();
+    mv.translate(x+width/2, y+height/2,0);
+    glUniformMatrix4fv(glGetUniformLocation(pid, "mModelview"), 1, false, mv.d());
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+    
+
+    glUniform1f(glGetUniformLocation(pid, "radius"), radius);
+    glUniform1f(glGetUniformLocation(pid, "linewidth"), _lineWidth);
+    glUniform4f(glGetUniformLocation(pid, "color"), _r, _g, _b, _a);
+    glUniform4f(glGetUniformLocation(pid, "rect"), x,devSize.height - y, width, height);
+
+
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+    
 }
 void drawRect(iRect rt, float radius)
 {
@@ -394,18 +967,302 @@ void drawRect(iRect rt, float radius)
 
 void fillRect(float x, float y, float width, float height, float radius)
 {
-    iPoint p[4] = {
-        {x, y},                 // top|left
-        {x, y + height},        // bottom|left
-        {x + width, y + height},// bottom|right
-        {x + width, y}          // top|right
+ 
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        str = loadFile("assets/shader/gdi/fillRect.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
+
+
+    float p[4][4] = {
+      {-width / 2, height / 2, 0, 1},   {+width / 2, height / 2, 0, 1},
+      {-width / 2, -height / 2, 0, 1},  {+width / 2, -height / 2, 0, 1},
     };
-    drawPoly(p, 4, true);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+
+    glUniformMatrix4fv(glGetUniformLocation(pid, "mProjection"), 1, false, mProjection->d());
+
+    iMatrix mv;
+    mv.loadIdentity();
+    mv.translate(x+width/2, y+height/2, 0);
+    glUniformMatrix4fv(glGetUniformLocation(pid, "mModelview"), 1, false, mv.d());
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+
+
+    glUniform1f(glGetUniformLocation(pid, "radius"), radius);
+    glUniform4f(glGetUniformLocation(pid, "color"), _r, _g, _b, _a);
+    glUniform4f(glGetUniformLocation(pid, "rect"), x, devSize.height - y, width, height);
+
+
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+
+   
 }
 
 void fillRect(iRect rt, float radius)
 {
     fillRect(rt.origin.x, rt.origin.y, rt.size.width, rt.size.height, radius);
+}
+
+
+void drawCircle(iPoint p, float radius, float linewidth)
+{
+    drawCircle(p.x, p.y, radius, linewidth);
+}
+
+void drawCircle(float x, float y, float radius,float linewidth)
+{
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        free(str);
+        str = loadFile("assets/shader/gdi/linecircle.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        free(str);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
+    float lw = linewidth / 2;
+
+    float p[4][4] = {
+        {x - radius - lw, y + radius + lw, 0, 1}, { x + radius + lw, y + radius + lw, 0, 1},
+        {x - radius - lw, y - radius - lw, 0, 1}, { x + radius + lw, y - radius - lw, 0, 1},
+    };
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+
+    GLuint mp = glGetUniformLocation(pid, "mProjection");
+    glUniformMatrix4fv(mp, 1, false, mProjection->d());
+
+    GLuint mm = glGetUniformLocation(pid, "mModelview");
+    glUniformMatrix4fv(mm, 1, false, mModelview->d());
+
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+
+    GLuint uCenter = glGetUniformLocation(pid, "center");
+    glUniform2f(uCenter, x, devSize.height -y);
+
+    glUniform1f(glGetUniformLocation(pid, "radius"), radius);
+
+    GLuint uColor = glGetUniformLocation(pid, "color");
+    glUniform4f(uColor, _r, _g, _b, _a);
+
+    GLuint ulinewidth = glGetUniformLocation(pid, "linewidth");
+    glUniform1f(ulinewidth,linewidth);
+
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void fillCircle(iPoint p, float radius)
+{
+    fillCircle(p.x, p.y, radius);
+}
+void fillCircle(float x, float y, float radius)
+{
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        free(str);
+        str = loadFile("assets/shader/gdi/circle.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
+
+    
+    float p[4][4] = {
+        {x - radius, y + radius, 0, 1}, { x + radius, y + radius, 0, 1},
+        {x - radius, y - radius, 0, 1}, { x + radius, y - radius, 0, 1},
+    };
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+
+    GLuint mp = glGetUniformLocation(pid, "mProjection");
+    glUniformMatrix4fv(mp, 1, false, mProjection->d());
+    iMatrix mv;
+    mv.loadIdentity();
+    mv.translate(x, y, 0);
+    GLuint mm = glGetUniformLocation(pid, "mModelview");
+    glUniformMatrix4fv(mm, 1, false, mModelview->d());
+
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+
+    GLuint uCenter = glGetUniformLocation(pid, "center");
+    glUniform2f(uCenter, x,  devSize.height - y);
+
+    GLuint uRadius = glGetUniformLocation(pid, "radius");  
+    glUniform1f(uRadius, radius);
+
+    GLuint uColor = glGetUniformLocation(pid, "color");
+    glUniform4f(uColor, _r, _g, _b, _a);
+
+
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void drawEllipse(float x, float y, float radius0, float radius1,float linewidth, float degree)
+{
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        free(str);
+        str = loadFile("assets/shader/gdi/drawEllipse.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        free(str);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
+   
+    float lw = linewidth / 2;
+
+    float p[4][4] = {
+        {-radius0 - lw-0.5f, +radius1 + lw + 0.5f, 0, 1}, { radius0  + lw + 0.5f, +radius1 + lw +0.5f, 0, 1},
+        {-radius0 - lw-0.5f, -radius1 - lw - 0.5f, 0, 1}, { radius0  + lw + 0.5f, -radius1 - lw -0.5f, 0, 1},
+    };
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+
+    GLuint mp = glGetUniformLocation(pid, "mProjection");
+    glUniformMatrix4fv(mp, 1, false, mProjection->d());
+    iMatrix mv;
+    mv.loadIdentity();
+    mv.translate(x, y, 0);
+  //  mv.rotate(0, 0, 1, 360 - degree);// ccw
+    GLuint mm = glGetUniformLocation(pid, "mModelview");
+    glUniformMatrix4fv(mm, 1, false, mv.d());
+
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+
+    GLuint uCenter = glGetUniformLocation(pid, "center");
+    glUniform2f(uCenter, x, devSize.height - y);
+
+    glUniform1f(glGetUniformLocation(pid, "a"), radius0);
+    glUniform1f(glGetUniformLocation(pid, "b"), radius1);
+    glUniform1f(glGetUniformLocation(pid, "linewidth"), linewidth);
+    glUniform1f(glGetUniformLocation(pid, "radian"), degree * M_PI / 180);
+
+    GLuint uColor = glGetUniformLocation(pid, "color");
+    glUniform4f(uColor, _r, _g, _b, _a);
+    
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void drawEllipse(iPoint p, float radius0, float radius1,float linewidth, float degree)
+{
+    drawEllipse(p.x, p.y, radius0,radius1,linewidth, degree);
+}
+
+void fillEllipse(float x, float y, float radius0, float radius1, float degree)
+{
+    static GLuint pid = 0;
+    if (pid == 0)
+    {
+        int length;
+        char* str = loadFile("assets/shader/gdi/gdi.vert", length);
+        GLuint vid = createShader(str, GL_VERTEX_SHADER);
+        free(str);
+        str = loadFile("assets/shader/gdi/fillEllipse.frag", length);
+        GLuint fid = createShader(str, GL_FRAGMENT_SHADER);
+        pid = createProgramID(vid, fid);
+        destroyShader(vid);
+        destroyShader(fid);
+    }
+    glUseProgram(pid);
+
+
+    float p[4][4] = {
+        {- radius0 - 0.5f, + radius1 + 0.5f, 0, 1}, { radius0 + 0.5f, + radius1 + 0.5f, 0, 1},
+        {- radius0 - 0.5f, - radius1 - 0.5f, 0, 1}, { radius0 + 0.5f, - radius1 - 0.5f, 0, 1},
+    };
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 16, p);
+
+    GLuint mp = glGetUniformLocation(pid, "mProjection");
+    glUniformMatrix4fv(mp, 1, false, mProjection->d());
+    iMatrix mv;
+    mv.loadIdentity();
+    mv.translate(x, y, 0);
+    mv.rotate(0, 0, 1, 360 - degree);// ccw
+    GLuint mm = glGetUniformLocation(pid, "mModelview");
+    glUniformMatrix4fv(mm, 1, false, mv.d());
+
+    GLuint positionAttr = glGetAttribLocation(pid, "position");
+    glEnableVertexAttribArray(positionAttr);
+    glVertexAttribPointer(positionAttr, 4, GL_FLOAT, GL_FALSE, 0, (const void*)0);
+
+    GLuint uCenter = glGetUniformLocation(pid, "center");
+    glUniform2f(uCenter, x, devSize.height - y);
+
+    glUniform1f(glGetUniformLocation(pid, "a"), radius0);
+    glUniform1f(glGetUniformLocation(pid, "b"), radius1);
+    glUniform1f(glGetUniformLocation(pid, "radian"), degree * M_PI / 180);
+
+    GLuint uColor = glGetUniformLocation(pid, "color");
+    glUniform4f(uColor, _r, _g, _b, _a);
+
+
+    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
+
+    glDisableVertexAttribArray(positionAttr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
+void fillEllipse(iPoint p, float radius0, float radius1, float degree)
+{
+    fillEllipse(p.x, p.y, radius0, radius1, degree);
 }
 
 Texture* createTexture(int width, int height, bool rgba32f)
@@ -507,7 +1364,8 @@ void saveImageFromRGBA(const char* path, uint8* rgba, int width, int height)
         for (int i = 0; i < width; i++)
         {
             uint8* dst = &bgra[stride * 4 * j + 4 * i];
-            uint8* src = &rgba[potWidth * 4 * (height-1-j) + 4 * i];
+            //uint8* src = &rgba[potWidth * 4 * (height-1-j) + 4 * i];
+            uint8* src = &rgba[potWidth * 4 * j + 4 * i];
             dst[2] = src[0];
             dst[1] = src[1];
             dst[0] = src[2];
@@ -849,95 +1707,73 @@ void drawImage(Texture* tex, int x, int y,
     case BOTTOM | HCENTER:  x -= width / 2; y -= height;     break;
     case BOTTOM | RIGHT:    x -= width;     y -= height;     break; }
 
-    iPoint position[4] = {
-        {x, y},             // top|left
-        {x, y+height},      // bottom|left,  
-        {x+width, y},       // top|right
-        {x+width, y+height} // bottom|right
-    };
-#if 0
-    iPoint coordinate[4] = {
-        {0.0, 0.0},
-        {0.0, tex->height / tex->potHeight},
-        {tex->width / tex->potWidth, 0.0},
-        {tex->width / tex->potWidth, tex->height / tex->potHeight}
-    };
-#else
-    iPoint coordinate[4] = {
-        {ix / tex->potWidth, iy / tex->potHeight},
-        {ix / tex->potWidth, (iy + ih) / tex->potHeight},
-        {(ix + iw) / tex->potWidth, iy / tex->potHeight},
-        {(ix + iw) / tex->potWidth, (iy + ih) / tex->potHeight}
-    };
-#endif
-    float color[4][4] = {
-        {_r, _g, _b, _a},
-        {_r, _g, _b, _a},
-        {_r, _g, _b, _a },
-        {_r, _g, _b, _a} };
-    if (reverse == REVERSE_WIDTH)
+    
+    gVbo->qNum = 1;
+    iQuad* q = &gVbo->q[0];
+    q->tl.p[0] = x,         q->tl.p[1] = y;
+    q->tr.p[0] = x + width, q->tr.p[1] = y;
+    q->bl.p[0] = x,         q->bl.p[1] = y+height;
+    q->br.p[0] = x + width, q->br.p[1] = y+height;
+
+    q->tl.uv.x = ix / tex->potWidth, q->tl.uv.y = iy / tex->potHeight;
+    q->tr.uv.x = (ix + iw) / tex->potWidth, q->tr.uv.y = iy / tex->potHeight;
+    q->bl.uv.x = ix / tex->potWidth, q->bl.uv.y = (iy + ih) / tex->potHeight;
+    q->br.uv.x = (ix + iw) / tex->potWidth, q->br.uv.y = (iy + ih) / tex->potHeight;
+ 
+    iColor4b c = iColor4bMake(_r * 0xff, _b * 0xff, _g * 0xff, _a * 0xff);
+    q->tl.c = c;
+    q->tr.c = c;
+    q->bl.c = c;
+    q->br.c = c;
+
+    if (reverse &REVERSE_WIDTH)
     {
-        iPoint t;
-        for (int i = 0; i < 2; i++)
-        {
-            t = position[i];
-            position[i] = position[i+2];
-            position[i+2] = t;
-        }
+        float t = q->tl.p[0];
+        q->tl.p[0] = q->tr.p[0];
+        q->tr.p[0] = t;
+
+        t = q->bl.p[0];
+        q->bl.p[0] = q->br.p[0];
+        q->br.p[0] = t;
+
     }
-    else if (reverse == REVERSE_HEIGHT)
+    if (reverse & REVERSE_HEIGHT)
     {
-        iPoint t;
-        for (int i = 0; i < 2; i++)
-        {
-            t = position[2 * i];
-            position[2 * i] = position[2 * i + 1];
-            position[2 * i + 1] = t;
-        }
+        float t = q->tl.p[1];
+        q->tl.p[1] = q->bl.p[1];
+        q->bl.p[1] = t;
+
+        t = q->tr.p[1];
+        q->tr.p[1] = q->br.p[1];
+        q->br.p[1] = t;
+  
     }
 
-    glPushMatrix();
+    float m[16];
+    memcpy(m, mModelview->d(), sizeof(float) * 16);
+
     if (degree)
     {
         iPoint t = iPointMake(x + width / 2, y + height / 2);
-        for (int i = 0; i < 4; i++)
-            position[i] -= t;
-        glTranslatef(t.x, t.y, 0);
+        q->tl.p[0] -= t.x, q->tl.p[1] -= t.y;
+        q->tr.p[0] -= t.x, q->tr.p[1] -= t.y;
+        q->bl.p[0] -= t.x, q->bl.p[1] -= t.y;
+        q->br.p[0] -= t.x, q->br.p[1] -= t.y;
 
-        float _xyz[3] = {0, 0, 0};
+        float _xyz[3] = { 0,0,0 };
         _xyz[xyz] = 1.0f;
+
         while (degree > 360) degree -= 360;
         degree = 360 - degree;
-        glRotatef(degree, _xyz[0], _xyz[1], _xyz[2]);
+       mModelview->rotate(_xyz[0], _xyz[1], _xyz[2],degree);
     }
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, tex->texID);
+    gVbo->tex = tex;
+    gVbo->programID = getProgramID();
 
-    glVertexPointer(2, GL_FLOAT, 0, position);
-    glTexCoordPointer(2, GL_FLOAT, 0, coordinate);
-    glColorPointer(4, GL_FLOAT, 0, color);
-
-#if 1
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-#elif 1
-    uint8 indices[4] = { 0, 1, 2, 3 };
-    glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_BYTE, indices);
-#else
-    uint8 indices[6] = { 0, 1, 2,  1, 2, 3 };
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, indices);
-#endif
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    glPopMatrix();
+    gVbo->paint(0.0f);
+    
+   // memcpy(mModelview->d(), m, sizeof(float) * 16);
 }
 
 void setClip(int x, int y, int width, int height)
@@ -955,6 +1791,7 @@ void setClip(iRect rt)
 {
     setClip(rt.origin.x, rt.origin.y, rt.size.width, rt.size.height);
 }
+
 
 void setStringName(const char* name)
 {
@@ -1018,6 +1855,8 @@ void getStringBorderRGBA(float& r, float& g, float& b, float& a)
     b = _stringBorderB;
     a = _stringBorderA;
 }
+
+#if 1
 
 iRect rectOfString(uint8* rgba, int width, int height)
 {
@@ -1096,6 +1935,81 @@ iRect rectOfString(uint8* rgba, int width, int height)
 
 iSize sizeOfString(const char* szFormat, ...)
 {
+    /////////////////////////////////////////////////////// initialize
+    static Bitmap* bmp = NULL;
+    static Graphics* g;
+    if (bmp == NULL)
+    {
+        bmp = new Bitmap(devSize.width, devSize.height, PixelFormat32bppARGB);
+        g = Graphics::FromImage(bmp);
+        g->SetPageUnit(UnitPixel);
+        g->SetPixelOffsetMode(PixelOffsetModeHalf);
+        g->SetTextRenderingHint(TextRenderingHintClearTypeGridFit);
+        g->SetSmoothingMode(SmoothingModeAntiAlias8x8);
+        g->SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    }
+    g->Clear(Color(0, 0, 0, 0));
+
+    /////////////////////////////////////////////////////// drawString
+    va_list args;
+    va_start(args, szFormat);
+
+    char szText[1024];
+    _vsnprintf(szText, sizeof(szText), szFormat, args);
+    va_end(args);
+
+    wchar_t* wStr = utf8_to_utf16(szText);
+
+    GraphicsPath path;
+    FontFamily  fontFamily;
+    PointF      pointF(0, 0);
+    StringFormat sf;
+
+    int fontStyle;
+    checkFontFamily(&fontFamily, fontStyle);
+
+    path.AddString(wStr, lstrlenW(wStr), &fontFamily, fontStyle,
+        getStringSize(), pointF, &sf);
+
+    float gr, gg, gb, ga;
+    getStringRGBA(gr, gg, gb, ga);
+    SolidBrush brush(Color( float2uint8(ga),
+                            float2uint8(gr),
+                            float2uint8(gg),
+                            float2uint8(gb)));
+    g->FillPath(&brush, &path);
+
+    float sb = getStringBorder();
+    if (sb)
+    {
+        getStringBorderRGBA(gr, gg, gb, ga);
+        Pen pen(Color(  float2uint8(ga),
+                        float2uint8(gr),
+                        float2uint8(gg),
+                        float2uint8(gb)));
+        pen.SetWidth(sb);
+        g->DrawPath(&pen, &path);
+    }
+
+    free(wStr);
+
+    /////////////////////////////////////////////////////// rectOfString
+    BitmapData bmpData;
+    Rect rt(0, 0, devSize.width, devSize.height);
+    bmp->LockBits(&rt, ImageLockModeRead, PixelFormat32bppARGB, &bmpData);
+
+    uint8* argb = (uint8*)bmpData.Scan0;
+    iRect rect = rectOfString(argb, devSize.width, devSize.height);
+
+    bmp->UnlockBits(&bmpData);
+
+    return rect.size;
+}
+
+#else
+
+iSize sizeOfString(const char* szFormat, ...)
+{
     va_list args;
     va_start(args, szFormat);
 
@@ -1123,6 +2037,8 @@ iSize sizeOfString(const char* szFormat, ...)
 
     return iSizeMake(rt.Width, rt.Height);
 }
+
+#endif
 
 void drawString(int x, int y, int anc, const char* szFormat, ...)
 {
@@ -1259,7 +2175,6 @@ bool containRect(iRect src, iRect dst)
 char* loadFile(const char* filePath, int& length)
 {
     FILE* pf = fopen(filePath, "rb");
-
     fseek(pf, 0, SEEK_END);
     length = ftell(pf);
     char* buf = (char*)calloc(sizeof(char), 1 + length);
@@ -1279,3 +2194,4 @@ void saveFile(const char* filePath, char* buf, int bufLength)
 
     fclose(pf);
 }
+

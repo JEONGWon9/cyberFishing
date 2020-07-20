@@ -289,7 +289,7 @@ void Boat::paint(float dt, iPoint off)
 		iPoint ep = position + throwV * throwResult + off;
 		
 		throwAniDt += dt;
-		heightDt += dt;
+		
 		if (throwAniDt > _throwAniDt)
 		{
 			throwAniDt = _throwAniDt;
@@ -599,7 +599,7 @@ iPopup* gagebar;
 iImage* gagebarRect;
 
 
-void drawPopFishingGageAfter(iPopup* me, float dt);
+void drawPopFishingGageAfter(iPopup* me, iPoint p, float dt);
 void createPopFishingGage()
 {
 	iPopup* pop = new iPopup(iPopupStyleAlpha);
@@ -640,7 +640,7 @@ void showPopFishingGage(bool show)
 	}
 }
 
-void drawPopFishingGageAfter(iPopup* me, float dt)
+void drawPopFishingGageAfter(iPopup* me,iPoint p, float dt)
 {
 	if (me->stat != iPopupStatProc)
 		return;
@@ -648,7 +648,7 @@ void drawPopFishingGageAfter(iPopup* me, float dt)
 	gageDt += dt;
 	if (gageDt > _gageDt)
 		gageDt -= _gageDt;
-	iPoint p = gagebarRect->position + me->closePosition;
+	p = gagebarRect->position + me->closePosition;
 
 	setRGBA(0, 1, 0, 1);
 	// 23 x 98
@@ -724,7 +724,7 @@ iImage* fbg;
 Texture* texBFloat;
 float _bfloatAniDt, bfloatAniDegree;
 
-void drawFishingfloatAfter(iPopup* me, float dt);
+void drawFishingfloatAfter(iPopup* me, iPoint p, float dt);
 void createFishingfloat()
 {
 	iPopup* pop = new iPopup(iPopupStyleAlpha);	
@@ -775,7 +775,7 @@ void showFishingfloat(bool show)
 
 }
 #define floatAniDt 4.5f
-void drawFishingfloatAfter(iPopup* me, float dt)
+void drawFishingfloatAfter(iPopup* me,iPoint p, float dt)
 {
 	if (me->stat != iPopupStatProc)
 		return;
@@ -783,7 +783,7 @@ void drawFishingfloatAfter(iPopup* me, float dt)
 
 
 	setRGBA(1, 1, 1, 1);
-	iPoint fp = fbg->position + iPointMake(fbg->tex->width/2, fbg->tex->height/2);
+	p = fbg->position + iPointMake(fbg->tex->width/2, fbg->tex->height/2);
 
 	bfloatAniDt += dt;
 	
@@ -797,7 +797,7 @@ void drawFishingfloatAfter(iPopup* me, float dt)
 	if (degree < 0)
 		degree += 360;
 	
-	drawImage(texBFloat, fp.x, fp.y, 0, 0, texBFloat->width, texBFloat->height,
+	drawImage(texBFloat, p.x, p.y, 0, 0, texBFloat->width, texBFloat->height,
 		VCENTER | HCENTER, 1.0f, 1.0f, 2, degree, REVERSE_NONE);
 }
 

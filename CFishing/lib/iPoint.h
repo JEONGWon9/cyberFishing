@@ -27,6 +27,7 @@ iPoint iPointMake(float x, float y);
 iPoint iPointVector(iPoint p);
 float iPointLength(iPoint p);
 iPoint iPointRotate(const iPoint& p, const iPoint& t, float degree);
-float iPointAngle(iPoint& v1, iPoint& v2, iPoint& v3);
+float iPointDistance(const iPoint& p0, const iPoint& p1);
+float iPointAngle(const iPoint& v1, const iPoint& v2, const iPoint& v3);
 
-float iPointDistance(iPoint& p1, iPoint& p2);
+

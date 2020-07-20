@@ -19,7 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Ctrl\Dlgitem.cpp" />
+    <ClCompile Include="Ctrl\DlgNom.cpp" />
+    <ClCompile Include="Ctrl\DlgQuest.cpp" />
+    <ClCompile Include="Ctrl\MapEditor.cpp" />
+    <ClCompile Include="Ctrl\Script.cpp" />
+    <ClCompile Include="Ctrl\ScriptData.cpp" />
     <ClCompile Include="game\App.cpp" />
+    <ClCompile Include="game\AppForCtrl.cpp" />
     <ClCompile Include="game\Ending.cpp" />
     <ClCompile Include="game\Fishing.cpp" />
     <ClCompile Include="game\Game.cpp" />
@@ -34,11 +41,13 @@
     <ClCompile Include="lib\iFPS.cpp" />
     <ClCompile Include="lib\iGraphics.cpp" />
     <ClCompile Include="lib\iImage.cpp" />
+    <ClCompile Include="lib\iMatrix.cpp" />
     <ClCompile Include="lib\iOpenAL.cpp" />
     <ClCompile Include="lib\iOpenGL.cpp" />
     <ClCompile Include="lib\iPoint.cpp" />
     <ClCompile Include="lib\iPopup.cpp" />
     <ClCompile Include="lib\iRect.cpp" />
+    <ClCompile Include="lib\iShaderToy.cpp" />
     <ClCompile Include="lib\iShortestPath.cpp" />
     <ClCompile Include="lib\iSize.cpp" />
     <ClCompile Include="lib\iSort.cpp" />
@@ -46,9 +55,18 @@
     <ClCompile Include="lib\iString.cpp" />
     <ClCompile Include="lib\iStrTex.cpp" />
     <ClCompile Include="lib\iType.cpp" />
+    <ClCompile Include="lib\iVideo.cpp" />
+    <ClCompile Include="lib\iWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ctrl\Dlgitem.h" />
+    <ClInclude Include="Ctrl\DlgNom.h" />
+    <ClInclude Include="Ctrl\DlgQuest.h" />
+    <ClInclude Include="Ctrl\MapEditor.h" />
+    <ClInclude Include="Ctrl\Script.h" />
+    <ClInclude Include="Ctrl\ScriptData.h" />
     <ClInclude Include="game\App.h" />
+    <ClInclude Include="game\AppForCtrl.h" />
     <ClInclude Include="game\Ending.h" />
     <ClInclude Include="game\Fishing.h" />
     <ClInclude Include="game\Game.h" />
@@ -62,11 +80,13 @@
     <ClInclude Include="lib\iFPS.h" />
     <ClInclude Include="lib\iGraphics.h" />
     <ClInclude Include="lib\iImage.h" />
+    <ClInclude Include="lib\iMatrix.h" />
     <ClInclude Include="lib\iOpenAL.h" />
     <ClInclude Include="lib\iOpenGL.h" />
     <ClInclude Include="lib\iPoint.h" />
     <ClInclude Include="lib\iPopup.h" />
     <ClInclude Include="lib\iRect.h" />
+    <ClInclude Include="lib\iShaderToy.h" />
     <ClInclude Include="lib\iShortestPath.h" />
     <ClInclude Include="lib\iSize.h" />
     <ClInclude Include="lib\iSort.h" />
@@ -74,6 +94,8 @@
     <ClInclude Include="lib\iString.h" />
     <ClInclude Include="lib\iStrTex.h" />
     <ClInclude Include="lib\iType.h" />
+    <ClInclude Include="lib\iVideo.h" />
+    <ClInclude Include="lib\iWindow.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +231,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLEW_STATIC;_USE_MATH_DEFINES;GDIPVER=0x0110;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>TOOL=0;GLEW_STATIC;_USE_MATH_DEFINES;GDIPVER=0x0110;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\workspace\CFishing\CFishing\lib;C:\workspace\OpenAL 1.1 SDK\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\workspace\CFishing\CFishing\lib;C:\workspace\OpenAL 1.1 SDK\include;C:\workspace\BGA2\TowerDefense\spine-c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -236,20 +258,22 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_USE_MATH_DEFINES;GDIPVER=0x0110;_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\workspace\CFishing\CFishing\lib;C:\workspace\OpenAL 1.1 SDK\include;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\workspace\OpenAL 1.1 SDK\libs\Win32;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

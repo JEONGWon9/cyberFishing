@@ -150,7 +150,7 @@ iImage** imgNumber;
 iStrTex* stSelect;
 Texture* methodStSelect(const char* str);
 
-void drawPopNumber(iPopup* me, float dt);
+void drawPopNumber(iPopup* me, iPoint p, float dt);
 
 void openPopNumber(iPopup* me)
 {
@@ -297,7 +297,7 @@ void showPopNumber(bool show)
 }
 
 
-void drawPopNumber(iPopup* me, float dt)
+void drawPopNumber(iPopup* me, iPoint p, float dt)
 {
 	for (int i = 0; i < 1; i++)
 		imgNumberBtn[i]->setTexAtIndex(100+i == popNumber->selected);

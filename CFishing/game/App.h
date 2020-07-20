@@ -1,5 +1,7 @@
 #pragma once
 
+#if(TOOL==0)
+
 #include "iStd.h"
 
 #include "../resource.h"
@@ -62,3 +64,4 @@ void enforceResolution(int edge, RECT& rect, int win_border_width, int win_borde
 	7. sound - 
 */
 
+#endif

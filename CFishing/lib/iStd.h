@@ -14,6 +14,9 @@
 #include "iFPS.h"
 
 #include "iOpenAL.h"
+#include "iVideo.h"
+#include"iShaderToy.h"
+
 
 #if _DEBUG
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
@@ -38,6 +41,52 @@ bool getKeyDown(uint32 key);
 uint32 getKeyStat();
 bool getKeyStat(uint32 key);
 void resizeLib(int width, int height);
+void zoomLib(iPoint point, float rate);
+void shakeLib(int range, float duration=0.2f);
+extern GLuint vertexObject, vertexBuffer;
+
+
+
+
+
+struct iVertex
+{
+    float p[4];//alway [2] = 0 , [3] == 1
+    iPoint uv;
+    iColor4b c;
+
+};
+
+struct iQuad
+{
+    iVertex tl, tr, bl, br;
+    
+};
+
+class iVBO
+{
+
+public:
+    iVBO(int qNum = 1000);
+    virtual ~iVBO();
+
+    //add...ex)position..
+    void paint(float dt);
+
+
+
+public:
+    iQuad* q;
+    int qNum, _qNum;
+    short* indices;
+
+    Texture* tex;
+    GLuint vbo;
+    GLuint programID;// GLenum blendSrc, blendDst;
+
+
+};
+
 
 class iFBO
 {
@@ -66,6 +115,9 @@ public:
 };
 extern iFBO* fbo;
 
+
+
+
 uint8 float2uint8(float f);
 void setRGBA(float r, float g, float b, float a);
 void getRGBA(float& r, float& g, float& b, float& a);
@@ -78,6 +130,20 @@ void drawRect(float x, float y, float width, float height, float radius=0.0f);
 void drawRect(iRect rt, float radius = 0.0f);
 void fillRect(float x, float y, float width, float height, float radius=0.0f);
 void fillRect(iRect rt, float radius=0.0f);
+
+void drawCircle(iPoint p, float radius, float linewidth);
+void drawCircle(float x, float y, float radius, float linewidth);
+
+void fillCircle(iPoint p, float radius);
+void fillCircle(float x, float y, float radius);
+
+void drawEllipse(float x, float y, float radius0,float radius1, float linewidth, float degree);
+void drawEllipse(iPoint p, float radius0, float radius1, float linewidth, float degree);
+
+void fillEllipse(float x, float y, float radius0, float radius1, float degree);
+void fillEllipse(iPoint p, float radius0, float radius1, float degree);
+
+void shaderdrawline(iPoint sp, iPoint ep);
 
 void saveImageFromRGBA(const char* path, uint8* rgba, int width, int height);
 uint8* bmp2rgba(Bitmap* bmp, int& width, int& height);
@@ -103,6 +169,8 @@ void drawImage(Texture* tex, int x, int y,
 
 void setClip(int x, int y, int width, int height);
 void setClip(iRect rect);
+
+
 
 void setStringName(const char* name);
 const char* getStringName();
@@ -134,3 +202,4 @@ bool containRect(iRect src, iRect dst);
 
 char* loadFile(const char* filePath, int& length);
 void saveFile(const char* filePath, char* buf, int bufLength);
+

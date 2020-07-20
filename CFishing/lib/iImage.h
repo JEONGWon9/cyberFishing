@@ -33,15 +33,18 @@ public:
 	bool selected;
 	float selectedDt, _selectedDt;
 	float selectedScale;
-	float width, height;
 
 	bool animation;
 	float aniDt, _aniDt;
 	int frame;
 	bool lastFrame;
 	int repeatNum, _repeatNum;	// 0 : inf
-	uint8 leftRight;// 0:left, 1:right
 	IMAGE_METHOD method;
+
+	float scale;
+	float degree;
+	int anc;
+	int8 leftRight;// 0:oright 1:w 2:h
 };
 
 #define default_selectedDt 0.1f

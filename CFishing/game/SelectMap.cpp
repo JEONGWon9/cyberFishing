@@ -54,7 +54,7 @@ void keySelectMap(iKeyState stat, iPoint point)
 iPopup* fishpoint;
 iImage** fp;
 int bShowFishInfo;
-void drawPopPointBefore(iPopup* me, float dt);
+void drawPopPointBefore(iPopup* me, iPoint p, float dt);
 
 void createPopPoint()
 {
@@ -100,7 +100,7 @@ void showPopPoint(bool show)
 	fishpoint->show(show);
 }
 
-void drawPopPointBefore(iPopup* me, float dt)
+void drawPopPointBefore(iPopup* me, iPoint p, float dt)
 {
 	for (int i = 0; i < 3; i++)
 		fp[i]->setTexAtIndex(i == fishpoint->selected);

@@ -28,6 +28,17 @@
     <ClCompile Include="game\SelectMap.cpp" />
     <ClCompile Include="game\SeaBoat.cpp" />
     <ClCompile Include="game\Fishing.cpp" />
+    <ClCompile Include="game\AppForCtrl.cpp" />
+    <ClCompile Include="lib\iWindow.cpp" />
+    <ClCompile Include="lib\iShaderToy.cpp" />
+    <ClCompile Include="lib\iMatrix.cpp" />
+    <ClCompile Include="lib\iVideo.cpp" />
+    <ClCompile Include="Ctrl\Dlgitem.cpp" />
+    <ClCompile Include="Ctrl\DlgNom.cpp" />
+    <ClCompile Include="Ctrl\DlgQuest.cpp" />
+    <ClCompile Include="Ctrl\MapEditor.cpp" />
+    <ClCompile Include="Ctrl\Script.cpp" />
+    <ClCompile Include="Ctrl\ScriptData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\iArray.h" />
@@ -57,6 +68,17 @@
     <ClInclude Include="game\SelectMap.h" />
     <ClInclude Include="game\SeaBoat.h" />
     <ClInclude Include="game\Fishing.h" />
+    <ClInclude Include="game\AppForCtrl.h" />
+    <ClInclude Include="lib\iWindow.h" />
+    <ClInclude Include="lib\iShaderToy.h" />
+    <ClInclude Include="lib\iMatrix.h" />
+    <ClInclude Include="lib\iVideo.h" />
+    <ClInclude Include="Ctrl\Dlgitem.h" />
+    <ClInclude Include="Ctrl\DlgNom.h" />
+    <ClInclude Include="Ctrl\DlgQuest.h" />
+    <ClInclude Include="Ctrl\MapEditor.h" />
+    <ClInclude Include="Ctrl\Script.h" />
+    <ClInclude Include="Ctrl\ScriptData.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="CFishing.ico" />
